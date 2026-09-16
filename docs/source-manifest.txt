@@ -1,10 +1,11 @@
-# Explicitly reviewed source-only manifest. Do not add runtime or live data.
 .env.example
 .gitattributes
+.github/workflows/verify.yml
 .gitignore
 AGENTS.md
 README.md
 db/migrations/001_initial.sql
+db/migrations/002_worker_heartbeat.sql
 docker-compose.yml
 docs/architecture.md
 docs/assumptions.md
@@ -36,11 +37,13 @@ scripts/migrate.ts
 scripts/package-source.py
 scripts/prepare-live.ts
 scripts/sample.ts
+scripts/verify-postgres.ts
 scripts/worker.ts
 src/app/api/[...path]/route.ts
 src/app/globals.css
 src/app/layout.tsx
 src/app/page.tsx
+src/components/account-menu.tsx
 src/components/brand.tsx
 src/components/connection-cards.tsx
 src/components/connections-panel.tsx
@@ -50,7 +53,10 @@ src/components/login-screen.tsx
 src/components/results.tsx
 src/components/run-history.tsx
 src/components/segment-builder.tsx
+src/components/setup-panel.tsx
+src/components/use-job.ts
 src/components/workspace-api.ts
+src/components/workspace-navigation.ts
 src/components/workspace-shell.tsx
 src/components/workspace-types.ts
 src/components/workspace.tsx
@@ -73,11 +79,16 @@ src/server/config.ts
 src/server/connections.ts
 src/server/crypto.ts
 src/server/database.ts
+src/server/job-errors.ts
 src/server/oauth.ts
 src/server/parser.ts
+src/server/readiness.ts
 src/server/repository.ts
+src/server/worker-status.ts
 src/server/worker.ts
 tests/domain.test.ts
+tests/job-errors.test.ts
+tests/parser.test.ts
 tests/providers.test.ts
 tests/security.test.ts
 tests/storage.test.ts

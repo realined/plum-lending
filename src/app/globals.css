@@ -1912,3 +1912,202 @@ th {
     background: #f4eff7;
   }
 }
+
+/* Real navigation and account actions, with explicit setup/draft boundaries. */
+.workspace-switch {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+.workspace-switch:hover,
+.profile:hover {
+  background: #403047;
+}
+.profile {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+}
+.profile > svg {
+  margin-left: auto;
+}
+.breadcrumb-home {
+  color: var(--plum, #68536f);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.account-control {
+  position: relative;
+}
+.account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 20px;
+  padding: 4px;
+  color: #68536f;
+}
+.account-trigger:hover {
+  background: #f4eff6;
+}
+.account-trigger .top-avatar {
+  display: grid;
+}
+.account-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 9px);
+  z-index: 50;
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  padding: 7px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 38px #30213820;
+}
+.account-summary {
+  padding: 11px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 5px;
+}
+.account-summary strong,
+.account-summary small {
+  display: block;
+}
+.account-summary small {
+  margin-top: 6px;
+  color: #817489;
+  line-height: 1.5;
+}
+.account-dropdown button {
+  width: 100%;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  border-radius: 5px;
+  color: #55465e;
+}
+.account-dropdown button:hover,
+.account-dropdown button:focus-visible {
+  background: #f4eff6;
+}
+.saved-run-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  background: #f4eff6;
+  border: 1px solid #e4dbe8;
+  border-radius: 9px;
+  margin-bottom: 22px;
+}
+.saved-run-heading strong {
+  color: #68536f;
+  font-size: 13px;
+}
+.saved-run-heading p {
+  margin: 8px 0 0;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.saved-run-heading button {
+  flex-shrink: 0;
+}
+.setup-panel {
+  padding: 25px;
+  margin-bottom: 22px;
+}
+.setup-panel .panel-title {
+  flex-wrap: wrap;
+}
+.setup-panel .panel-title a {
+  margin-left: auto;
+}
+.setup-boundary {
+  color: #756d7d;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 16px 0;
+}
+.setup-checks {
+  padding: 0;
+  margin: 20px 0;
+  list-style: none;
+}
+.setup-checks li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.setup-checks svg {
+  flex-shrink: 0;
+  color: #82708d;
+  margin-top: 2px;
+}
+.setup-checks strong {
+  font-size: 13px;
+}
+.setup-checks p {
+  font-size: 12px;
+  color: #817489;
+  margin: 6px 0 0;
+  line-height: 1.6;
+}
+.setup-checks li > span {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 5px 7px;
+  border-radius: 4px;
+  background: #f4eff6;
+  color: #756282;
+}
+.setup-instructions {
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 13px;
+}
+.setup-instructions summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.setup-instructions p {
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.setup-instructions pre {
+  overflow: auto;
+  padding: 14px;
+  background: #f5f3f7;
+  line-height: 1.8;
+  border-radius: 6px;
+}
+@media (max-width: 700px) {
+  .setup-panel {
+    padding: 18px;
+  }
+  .setup-panel .panel-title a {
+    margin-left: 0;
+  }
+  .setup-checks li {
+    flex-wrap: wrap;
+  }
+  .setup-checks li > div {
+    flex: 1;
+    min-width: 180px;
+  }
+  .setup-checks li > span {
+    margin-left: 30px;
+  }
+  .saved-run-heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

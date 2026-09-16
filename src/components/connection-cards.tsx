@@ -6,11 +6,13 @@ export function ConnectionCards({
   tab,
   onConnectHubSpot,
   onDisconnect,
+  onSetup,
 }: {
   status: Status;
   tab: WorkspaceTab;
   onConnectHubSpot: () => void;
   onDisconnect: (provider: string) => void;
+  onSetup: () => void;
 }) {
   return (
     <section className="connections-grid" aria-label="Data connections">
@@ -40,8 +42,8 @@ export function ConnectionCards({
               </p>
               <small>
                 {c?.lastSync
-                  ? `Last successful sync · ${new Date(c.lastSync).toLocaleString()}`
-                  : "No completed sync yet"}
+                  ? `Last ${status.mode === "demo" ? "demo run" : "successful ingestion"} · ${new Date(c.lastSync).toLocaleString()}`
+                  : "No completed ingestion yet"}
               </small>
             </div>
             <div className="connection-actions">
@@ -55,6 +57,11 @@ export function ConnectionCards({
                     ? "Connected"
                     : "Not connected"}
               </span>
+              {status.mode === "demo" && tab !== "connections" && (
+                <button className="text-button" onClick={onSetup}>
+                  Set up live data <ArrowUpRight size={14} />
+                </button>
+              )}
               {status.mode === "live" &&
                 !connected &&
                 (provider === "gmail" ? (

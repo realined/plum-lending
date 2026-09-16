@@ -14,12 +14,14 @@ export function ExportPreview({
   onSearchChange,
   onSelect,
   onPageChange,
+  loadingPage = false,
 }: {
   data: JobResponse;
   search: string;
   onSearchChange: (value: string) => void;
   onSelect: (row: ExportRow) => void;
   onPageChange: (offset: number) => void;
+  loadingPage?: boolean;
 }) {
   return (
     <section className="panel results-panel">
@@ -72,14 +74,14 @@ export function ExportPreview({
             <div>
               <button
                 aria-label="Previous result page"
-                disabled={data.offset === 0}
+                disabled={loadingPage || data.offset === 0}
                 onClick={() => onPageChange(Math.max(0, data.offset - 25))}
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 aria-label="Next result page"
-                disabled={data.offset + 25 >= data.totalRows}
+                disabled={loadingPage || data.offset + 25 >= data.totalRows}
                 onClick={() => onPageChange(data.offset + 25)}
               >
                 <ChevronRight size={16} />

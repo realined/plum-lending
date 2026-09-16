@@ -136,3 +136,35 @@ This journal records architectural checkpoints and verified results. Code being 
 **Interview talking points.** Honest interaction affordances; evidence levels; deterministic eligibility with full thread context; durable jobs versus incremental sync; data minimization and measurable runtime. Earlier visual QA covered the main export flow but missed the shell interaction inventory; this audit corrects the plan, not that implementation yet.
 
 **Owner action.** No credentials needed for this review. Next engineering phase is UI interaction completion and offline boundary verification, followed by guided account setup with explicit authorization before live connections and processing. Full assessment and acceptance criteria are in `requirements-audit.md`.
+
+## Interaction completion — 2026-09-16
+
+**Goal.** Make the visible shell usable and separate drafts from saved results before account setup.
+
+**Decisions and implementation.** Added URL-backed view/run navigation, a keyboard-accessible account menu, functional workspace/profile setup links and breadcrumb, setup/configuration checklist, scenario labels, abortable job polling, and explicit demo parsing guidance. Main modules: `workspace-navigation.ts`, `account-menu.tsx`, `use-job.ts`, `setup-panel.tsx`, `readiness.ts`. URL state selects the view and saved job; API polling loads its immutable criteria/results; a new draft clears the selected run. Configuration checks return booleans, never values or provider health claims.
+
+**Alternatives.** Kept Next routing and one workspace. A new router, fake profile settings, and multitenancy would expand the challenge. Configuration presence is separated from real-service acceptance.
+
+**Validation.** Lint, strict types, 136 unit/integration tests and production build passed. Four isolated API tests passed. Supported-browser checks passed: all shell destinations, account keyboard navigation/Escape, saved-run reload, new draft/result separation, Back, breadcrumb, setup, mobile account navigation; 390px viewport had 390px document/body width. Seven standalone UI tests could not launch Chromium due to the macOS sandbox, so no automated browser pass is claimed yet. Added regression tests for these flows; normal-host CI verification follows.
+
+**Assumptions/risks/security.** Demo remains synthetic; no live calls or credentials. Last ingestion is historical, not a provider health check. Mobile and desktop remain one admin workspace. Recent history is limited to 12 runs. Worker readiness and integration-boundary tests are the next phase.
+
+**Interview talking points.** URL versus transient form state; immutable saved-run ownership; accessible menus and focus; aborting stale requests; configuration versus connectivity versus live acceptance.
+
+**Owner action.** None for this phase. Account setup and live authorization will be requested at the explicit checkpoint.
+
+## Offline integration hardening — 2026-09-16
+
+**Goal.** Reduce mailbox retrieval breadth and prove authentication/interpretation/error boundaries before personal accounts are connected.
+
+**Decisions and implementation.** CRM eligibility now precedes email search, zero eligible contacts make no Gmail calls, and validated primary/secondary emails become bounded sender batches with page/thread deduplication. `executor.ts` still decides exact inclusion after full-thread normalization. `oauth.ts` checks the exact callback and expiration instant. `parser.ts` handles refusal/incomplete/transport outcomes without reflecting provider errors. `job-errors.ts` maps safe recovery messages by stage. `worker-status.ts` and migration 002 expose recent/stale/unseen database heartbeats independently from provider connectivity. Migration startup reads ordered, replay-safe SQL files under the existing PostgreSQL advisory lock.
+
+**Validation.** 174 Vitest tests pass, including OAuth route authentication, encrypted PKCE/state cookie, successful encrypted token persistence, rejected state/expiry/tampering/denial/missing scope/refresh/profile, mocked OpenAI output boundaries, sender batching/empty-candidate behavior, safe errors and worker staleness. Lint, strict types and production build pass. Added a CI workflow and isolated PostgreSQL process smoke test; their execution result is pending at this checkpoint.
+
+**Alternatives and assumptions.** Kept on-demand snapshots and the existing queue rather than adding incremental sync or another queue service. Sender batches minimize unrelated candidate retrieval without changing eligibility; Gmail search is still only a candidate index. Kept complete threads for context, including non-qualifying messages. A heartbeat is a recent observation, not a guarantee of future job success or provider access. CI has read-only repository permissions and no provider credentials.
+
+**Risks/security/remaining work.** Live token grants, HubSpot property/association behavior, model semantics and real runtime remain unverified. CRM snapshot retrieval and thread normalization remain serial/in-memory, suitable only for the measured POC scale until live evidence is collected. Gmail search behavior against actual aliases requires acceptance checks; aliases are passed explicitly because Gmail API search does not perform the UI's alias expansion. No raw errors, tokens, identities or correspondence are added to logs.
+
+**Interview talking points.** Search optimization versus authoritative eligibility; PKCE/state/session roles; schema-valid versus semantically correct model output; worker heartbeat versus job lease; privacy-preserving failure diagnosis.
+
+**Owner action.** No credentials yet. Next checkpoint is CI evidence and precise local account setup. Reference semantics: [Gmail filtering](https://developers.google.com/workspace/gmail/api/guides/filtering), [OpenAI structured output](https://developers.openai.com/api/docs/guides/structured-outputs).

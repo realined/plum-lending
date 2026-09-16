@@ -119,3 +119,104 @@ test("mobile layout and API request boundaries", async ({ page, request }) => {
   expect(invalid.status()).toBe(400);
   await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
 });
+
+test("workspace navigation, breadcrumb, account menu and setup are usable", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Workspace connection settings", exact: true })
+    .click();
+  await expect(page).toHaveURL(/view=connections/);
+  await expect(
+    page.getByRole("heading", { name: "Live account setup", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Full setup guide" }),
+  ).toHaveAttribute("href", /docs\/live-setup.md$/);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Live account setup", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Run history", exact: false }).click();
+  await expect(page).toHaveURL(/view=history/);
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: "Live account setup", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Workspace", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Build an audience", exact: true }),
+  ).toBeVisible();
+  const account = page.getByRole("button", {
+    name: "Account menu",
+    exact: true,
+  });
+  await account.click();
+  await expect(
+    page.getByRole("menuitem", { name: "Connections & setup" }),
+  ).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    page.getByRole("menuitem", { name: "Run history" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(account).toBeFocused();
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await account.click();
+  await page.getByRole("menuitem", { name: "Connections & setup" }).click();
+  await expect(page).toHaveURL(/view=connections/);
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await page.getByRole("link", { name: "Workspace", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Workspace details and setup", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Live account setup", exact: true }),
+  ).toBeVisible();
+});
+
+test("saved runs survive refresh and remain separate from new drafts", async ({
+  page,
+}) => {
+  await start(page);
+  await expect(
+    page.getByRole("heading", { name: "Export ready", exact: true }),
+  ).toBeVisible();
+  const savedUrl = page.url();
+  expect(savedUrl).toMatch(/run=[0-9a-f-]+/);
+  await page.reload();
+  await expect(page.locator("tbody tr")).toHaveCount(4);
+  await expect(page.getByLabel("Segment request")).toHaveCount(0);
+  await page.getByRole("button", { name: "New segment", exact: true }).click();
+  await page
+    .getByLabel("Segment request")
+    .fill("Find sponsors with different criteria that need review.");
+  await expect(page.getByRole("link", { name: "Download CSV" })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Audience preview" }),
+  ).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(savedUrl);
+  await expect(page.locator("tbody tr")).toHaveCount(4);
+});
+
+test("mobile account menu and a missing saved run provide a way forward", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/?view=builder&run=00000000-0000-4000-8000-000000000000");
+  await expect(page.getByRole("alert")).toContainText("Run not found");
+  await page.getByRole("button", { name: "New segment", exact: true }).click();
+  await expect(page.getByLabel("Segment request")).toBeVisible();
+  await page.getByRole("button", { name: "Account menu", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Connections & setup" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Live account setup", exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});

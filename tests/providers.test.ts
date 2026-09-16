@@ -98,7 +98,9 @@ describe("Gmail provider contracts", () => {
     );
     expect(
       await collect(
-        new GmailProvider(async () => token, [lender]).searchThreads(spec),
+        new GmailProvider(async () => token, [lender]).searchThreads(spec, [
+          "sponsor@example.test",
+        ]),
       ),
     ).toEqual(["first", "second"]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -107,20 +109,55 @@ describe("Gmail provider contracts", () => {
       expect(url.pathname).toBe("/gmail/v1/users/me/threads");
       expect(url.searchParams.get("maxResults")).toBe("100");
       expect(url.searchParams.get("q")).toBe(
-        `after:${Math.floor(Date.parse(spec.startInclusive) / 1000) - 1} before:${Math.ceil(Date.parse(spec.endExclusive) / 1000) + 1}`,
+        `after:${Math.floor(Date.parse(spec.startInclusive) / 1000) - 1} before:${Math.ceil(Date.parse(spec.endExclusive) / 1000) + 1} {from:"sponsor@example.test"}`,
       );
     }
   });
   it("accepts an empty Gmail result and rejects repeating pagination tokens", async () => {
     fetchMock.mockResolvedValueOnce(json({}));
     const provider = new GmailProvider(async () => token, [lender]);
-    expect(await collect(provider.searchThreads(spec))).toEqual([]);
+    expect(
+      await collect(provider.searchThreads(spec, ["sponsor@example.test"])),
+    ).toEqual([]);
     fetchMock.mockImplementation(async () =>
       json({ threads: [], nextPageToken: "loop" }),
     );
-    await expect(collect(provider.searchThreads(spec))).rejects.toMatchObject({
+    await expect(
+      collect(provider.searchThreads(spec, ["sponsor@example.test"])),
+    ).rejects.toMatchObject({
       code: "PAGINATION_LOOP",
     });
+  });
+  it("batches CRM identities, deduplicates threads, and never searches with no senders", async () => {
+    const provider = new GmailProvider(async () => token, [lender]);
+    expect(await collect(provider.searchThreads(spec, []))).toEqual([]);
+    expect(fetchMock).not.toHaveBeenCalled();
+    fetchMock.mockImplementation(async () =>
+      json({ threads: [{ id: "same-thread" }] }),
+    );
+    const senders = Array.from(
+      { length: 21 },
+      (_, i) => `sponsor${i}@example.test`,
+    );
+    expect(
+      await collect(
+        provider.searchThreads(spec, [...senders, "SPONSOR0@example.test"]),
+      ),
+    ).toEqual(["same-thread"]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const queries = fetchMock.mock.calls.map(([input]) =>
+      new URL(String(input)).searchParams.get("q")!,
+    );
+    expect((queries[0].match(/from:/g) ?? []).length).toBe(20);
+    expect(queries[1]).toContain('from:"sponsor20@example.test"');
+    expect(queries.join(" ")).not.toContain("SPONSOR0");
+    fetchMock.mockClear();
+    await expect(
+      collect(
+        provider.searchThreads(spec, ["sender@example.test} OR in:anywhere"]),
+      ),
+    ).rejects.toThrow();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
   it("requests full thread content, hydrates external text bodies, and leaves binary attachments unfetched", async () => {
     const message = gmailMessage();
@@ -446,14 +483,30 @@ describe("HubSpot read-only provider contracts", () => {
   it("validates read access to contacts, the Sponsor property, companies, deals, and pipelines", async () => {
     fetchMock.mockImplementation(async () => json({ results: [] }));
     await new HubSpotProvider(token).validateConnection();
-    expect(fetchMock.mock.calls.map(([input]) => new URL(String(input)).pathname)).toEqual([
-      "/crm/v3/objects/contacts", "/crm/v3/properties/contacts/contact_type", "/crm/v3/objects/companies", "/crm/v3/objects/deals", "/crm/v3/pipelines/deals",
+    expect(
+      fetchMock.mock.calls.map(([input]) => new URL(String(input)).pathname),
+    ).toEqual([
+      "/crm/v3/objects/contacts",
+      "/crm/v3/properties/contacts/contact_type",
+      "/crm/v3/objects/companies",
+      "/crm/v3/objects/deals",
+      "/crm/v3/pipelines/deals",
     ]);
-    expect(fetchMock.mock.calls.every(([, init]) => init?.method === undefined && init?.body === undefined)).toBe(true);
+    expect(
+      fetchMock.mock.calls.every(
+        ([, init]) => init?.method === undefined && init?.body === undefined,
+      ),
+    ).toBe(true);
   });
   it("rejects connection validation if company read access is missing", async () => {
-    routeFetch(url => url.pathname === "/crm/v3/objects/companies" ? json({}, 403) : json({ results: [] }));
-    await expect(new HubSpotProvider(token).validateConnection()).rejects.toMatchObject({ code: "PROVIDER_REQUEST", status: 403 });
+    routeFetch((url) =>
+      url.pathname === "/crm/v3/objects/companies"
+        ? json({}, 403)
+        : json({ results: [] }),
+    );
+    await expect(
+      new HubSpotProvider(token).validateConnection(),
+    ).rejects.toMatchObject({ code: "PROVIDER_REQUEST", status: 403 });
   });
   it("follows contact and company pagination, normalizes aliases and deduplicates object IDs", async () => {
     routeFetch((url) => {

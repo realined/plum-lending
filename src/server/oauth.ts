@@ -17,8 +17,11 @@ function oauthConfig() {
       400,
       "Configure Google OAuth client ID, secret, and redirect URI in .env first.",
     );
-  if (new URL(redirect).origin !== config().appUrl)
-    throw new HttpError(400, "Google redirect URI must use APP_URL.");
+  if (redirect !== `${config().appUrl}/api/connections/gmail/callback`)
+    throw new HttpError(
+      400,
+      "Google redirect URI must match APP_URL/api/connections/gmail/callback exactly.",
+    );
   return { clientId, clientSecret, redirect };
 }
 export function startOAuth() {
@@ -70,8 +73,9 @@ export async function finishOAuth(req: NextRequest) {
     const state = req.nextUrl.searchParams.get("state") ?? "",
       code = req.nextUrl.searchParams.get("code");
     if (
-      saved.expires < Date.now() ||
+      saved.expires <= Date.now() ||
       !constantEqual(state, saved.state) ||
+      req.nextUrl.searchParams.has("error") ||
       !code
     )
       return finish("oauth-failed");

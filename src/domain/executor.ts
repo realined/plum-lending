@@ -64,10 +64,18 @@ export async function executeSegment(
     }
     return true;
   });
+  if (!eligible.length) {
+    result.counts.failures = result.failures.length;
+    return result;
+  }
+  const senderEmails = [
+    ...new Set(eligible.flatMap((c) => c.emails.map(normalizeEmail))),
+  ];
   const lenders = new Set(lenderEmails.map(normalizeEmail));
   const threadIds = new Set<string>();
   // A search failure invalidates completeness of the whole run; do not report an empty success.
-  for await (const id of email.searchThreads(spec)) threadIds.add(id);
+  for await (const id of email.searchThreads(spec, senderEmails))
+    threadIds.add(id);
   const threads: Thread[] = [];
   let done = 0;
   for (const id of threadIds) {

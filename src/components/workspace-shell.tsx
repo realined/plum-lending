@@ -1,7 +1,8 @@
+import Link from "next/link";
+import { AccountMenu } from "./account-menu";
 import {
   AlertTriangle,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
   Clock3,
   Layers3,
@@ -17,26 +18,29 @@ export function Sidebar({
   status,
   tab,
   onTabChange,
-  onSignOut,
 }: {
   status: Status | null;
   tab: WorkspaceTab;
   onTabChange: (tab: WorkspaceTab) => void;
-  onSignOut: () => void;
 }) {
   return (
     <aside className="sidebar">
       <Brand />
-      <div className="workspace-switch">
+      <button
+        className="workspace-switch"
+        aria-label="Workspace connection settings"
+        onClick={() => onTabChange("connections")}
+      >
         <span className="workspace-avatar">P</span>
         <div>
           Plum Lending<small>Admin workspace</small>
         </div>
-        <ChevronDown size={15} />
-      </div>
+        <Link2 size={15} />
+      </button>
       <p className="nav-label">WORKSPACE</p>
-      <nav>
+      <nav aria-label="Main navigation">
         <button
+          aria-current={tab === "builder" ? "page" : undefined}
           className={tab === "builder" ? "nav-active" : ""}
           onClick={() => onTabChange("builder")}
         >
@@ -44,6 +48,7 @@ export function Sidebar({
           Audience builder
         </button>
         <button
+          aria-current={tab === "history" ? "page" : undefined}
           className={tab === "history" ? "nav-active" : ""}
           onClick={() => onTabChange("history")}
         >
@@ -54,6 +59,7 @@ export function Sidebar({
           )}
         </button>
         <button
+          aria-current={tab === "connections" ? "page" : undefined}
           className={tab === "connections" ? "nav-active" : ""}
           onClick={() => onTabChange("connections")}
         >
@@ -72,34 +78,38 @@ export function Sidebar({
           Every decision, traceable.
         </p>
       </div>
-      <div className="profile">
+      <button
+        className="profile"
+        aria-label="Workspace details and setup"
+        onClick={() => onTabChange("connections")}
+      >
         <span className="profile-avatar">PL</span>
-        <div>
-          Plum administrator
-          <small>
-            {status?.mode === "live" ? "Live workspace" : "Demo workspace"}
-          </small>
-        </div>
-        {status?.mode === "live" && (
-          <button title="Sign out" aria-label="Sign out" onClick={onSignOut}>
-            <LogOut size={16} />
-          </button>
-        )}
-      </div>
+        <span>
+          Plum administrator<small>Workspace details & setup</small>
+        </span>
+        <ChevronRight size={14} />
+      </button>
     </aside>
   );
 }
 export function Topbar({
   status,
   tab,
+  onTabChange,
+  onSignOut,
 }: {
   status: Status | null;
   tab: WorkspaceTab;
+  onTabChange: (tab: WorkspaceTab) => void;
+  onSignOut: () => void;
 }) {
   return (
     <header className="topbar">
       <span>
-        Workspace <ChevronRight size={13} />{" "}
+        <Link href="/?view=builder" className="breadcrumb-home">
+          Workspace
+        </Link>{" "}
+        <ChevronRight size={13} />{" "}
         <strong>
           {tab === "builder"
             ? "Audience builder"
@@ -115,7 +125,11 @@ export function Topbar({
           <i />
           {status?.mode === "live" ? "Live data" : "Demo environment"}
         </span>
-        <span className="top-avatar">PL</span>
+        <AccountMenu
+          status={status}
+          onNavigate={onTabChange}
+          onSignOut={onSignOut}
+        />
       </div>
     </header>
   );

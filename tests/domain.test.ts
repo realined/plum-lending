@@ -732,3 +732,43 @@ describe("safe, complete CSV export", () => {
     expect(readCsv(toCsv([]))).toEqual([[...CSV_HEADERS]]);
   });
 });
+
+// Retrieval candidates are limited by CRM, while the domain remains authoritative.
+it("skips Gmail entirely when CRM excludes everyone, preserving CRM failures", async () => {
+  const email = provider();
+  const search = vi.fn(() =>
+    (async function* () {
+      yield "unused";
+    })(),
+  );
+  email.searchThreads = search;
+  const crm = snapshot();
+  crm.contacts = crm.contacts.map((c) => ({
+    ...c,
+    associationsComplete: false,
+  }));
+  const result = await executeSegment(spec, crm, email, [lender]);
+  expect(search).not.toHaveBeenCalled();
+  expect(email.getThread).not.toHaveBeenCalled();
+  expect(result.counts.failures).toBe(result.failures.length);
+  expect(result.counts.failures).toBeGreaterThan(0);
+});
+it("passes primary and secondary eligible identities to Gmail without changing identity semantics", async () => {
+  const email = provider();
+  const search = vi.fn(() =>
+    (async function* () {
+      yield "thread-1";
+    })(),
+  );
+  email.searchThreads = search;
+  const crm = snapshot();
+  crm.contacts[0].emails = [
+    "Primary@example.test",
+    "secondary+tag@example.test",
+  ];
+  await executeSegment(spec, crm, email, [lender]);
+  expect(search).toHaveBeenCalledWith(spec, [
+    "primary@example.test",
+    "secondary+tag@example.test",
+  ]);
+});

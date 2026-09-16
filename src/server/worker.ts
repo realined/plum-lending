@@ -4,15 +4,22 @@ import { executeSegment } from "@/domain/executor";
 import { segmentSchema } from "@/domain/segment";
 import { db, type Database } from "./database";
 import { claimJob, completeJob, failJob, heartbeat } from "./repository";
+import { config } from "./config";
+import { touchWorker } from "./worker-status";
+import { safeRunError, type RunStage } from "./job-errors";
 import { liveProviders } from "./connections";
 export async function workOnce(database?: Database) {
-  const d = database ?? (await db()),
-    claim = await claimJob(d);
+  const d = database ?? (await db());
+  const mode = config().mode;
+  await touchWorker(d, mode);
+  const claim = await claimJob(d);
   if (!claim) return false;
   const { job, owner } = claim;
   let lost = false;
+  let stage: RunStage = "connections";
   const timer = setInterval(() => {
-    void heartbeat(d, job.id, owner)
+    void touchWorker(d, mode)
+      .then(() => heartbeat(d, job.id, owner))
       .then((ok) => {
         if (!ok) lost = true;
       })
@@ -35,7 +42,9 @@ export async function workOnce(database?: Database) {
       "INSERT INTO sync_jobs(id,export_job_id,status) VALUES($1,$2,'running')",
       [randomUUID(), job.id],
     );
+    stage = "hubspot";
     const crm = await providers.crm.snapshot();
+    stage = "gmail";
     if (
       lost ||
       !(await heartbeat(
@@ -67,6 +76,7 @@ export async function workOnce(database?: Database) {
       },
     );
     if (lost) throw new Error("LEASE_LOST");
+    stage = "storage";
     const published = await completeJob(d, job, owner, crm, result);
     console.info(
       JSON.stringify({
@@ -75,8 +85,8 @@ export async function workOnce(database?: Database) {
         counts: result.counts,
       }),
     );
-  } catch {
-    await failJob(d, job.id, owner);
+  } catch (error) {
+    await failJob(d, job.id, owner, safeRunError(error, stage));
     console.warn(JSON.stringify({ event: "export.failed", jobId: job.id }));
   } finally {
     clearInterval(timer);

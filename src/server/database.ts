@@ -1,4 +1,4 @@
-import { readFile, mkdir } from "node:fs/promises";
+import { readFile, readdir, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import postgres from "postgres";
@@ -17,10 +17,15 @@ export interface Database extends QueryDB {
   orm: ReturnType<typeof drizzlePg> | ReturnType<typeof drizzleLite>;
 }
 export async function createDatabase(url?: string): Promise<Database> {
-  const migration = await readFile(
-    path.join(process.cwd(), "db/migrations/001_initial.sql"),
-    "utf8",
-  );
+  const directoryPath = path.join(process.cwd(), "db/migrations");
+  const files = (await readdir(directoryPath))
+    .filter((name) => /^\d+_.*\.sql$/.test(name))
+    .sort();
+  const migration = (
+    await Promise.all(
+      files.map((name) => readFile(path.join(directoryPath, name), "utf8")),
+    )
+  ).join("\n");
   if (url?.startsWith("postgres")) {
     const client = postgres(url, { max: 5, onnotice: () => {} });
     // Serialize migrations across worker/web startup. Transactional DDL is safe to replay.

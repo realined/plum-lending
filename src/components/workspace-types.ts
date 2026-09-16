@@ -1,6 +1,8 @@
 import type { SegmentSpec } from "@/domain/segment";
 import type { ExportRow } from "@/domain/models";
 import type { Job } from "@/server/repository";
+import type { SetupCheck } from "@/server/readiness";
+import type { WorkerStatus } from "@/server/worker-status";
 export type WorkspaceTab = "builder" | "history" | "connections";
 export type Connection = {
   id: string;
@@ -14,11 +16,14 @@ export type Status = {
   connections: Connection[];
   jobs: Job[];
   workerMode: string;
+  worker: WorkerStatus;
   sponsorProperty: string;
   sponsorValue: string;
+  setup: SetupCheck[];
 };
 export type Interpretation = {
   id: string;
+  query: string;
   spec: SegmentSpec;
   assumptions: string[];
   source: string;

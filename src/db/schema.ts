@@ -155,3 +155,7 @@ export const syncJobs = pgTable("sync_jobs", {
   createdAt: now(),
   completedAt: timestamp("completed_at", { withTimezone: true }),
 });
+export const workerHeartbeats = pgTable("worker_heartbeats", {
+  mode: text().primaryKey(),
+  lastSeen: timestamp("last_seen", { withTimezone: true }).notNull(),
+});

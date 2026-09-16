@@ -22,10 +22,10 @@
 - [x] Results, full-thread inspection, download
 - [x] Empty, unsupported-query, loading, error, partial success states
 - [x] Critical flows and responsive visual review in supported in-app browser
-- [ ] Standalone Playwright browser suite (4 tests): launch blocked by macOS sandbox; run outside sandbox
-- [ ] Complete shell interaction audit fixes: workspace chevron, breadcrumb, upper avatar, lower profile; no misleading inactive controls
-- [ ] Add URL-backed navigation and distinguish edited drafts from prior run results
-- [ ] Make demo parsing limitations, live setup readiness, and demo history scenarios explicit
+- [ ] Standalone Playwright browser suite (7 tests): launch blocked by macOS sandbox; run outside sandbox
+- [x] Complete shell interaction audit fixes: workspace chevron, breadcrumb, upper avatar, lower profile; no misleading inactive controls
+- [x] Add URL-backed navigation and distinguish edited drafts from prior run results
+- [x] Make demo parsing limitations, live setup readiness, and demo history scenarios explicit
 
 ## 4. Handoff
 - [x] Setup, architecture, security, production expansion notes
@@ -40,8 +40,8 @@
 Demo must produce repeatable, explainable rows without credentials; full context outside the qualifying window must survive. Live adapters are exercised with contract mocks AND must pass a real-account acceptance run with the user’s Gmail and free HubSpot account before the submission is complete. Gmail history can expire, HubSpot Sponsor properties vary, and association failures must fail closed. Embedded demo PostgreSQL is single-process; live mode requires PostgreSQL and an always-on worker.
 
 ## Mandatory live acceptance (user clarification)
-- [ ] Close automated OAuth start/callback and live-parser response-boundary coverage gaps
-- [ ] Review/narrow mailbox candidate retrieval and retain safe, actionable failure categories before personal-account ingestion
+- [x] Close automated OAuth start/callback and live-parser response-boundary coverage gaps
+- [x] Review/narrow mailbox candidate retrieval and retain safe, actionable failure categories before personal-account ingestion
 - [ ] Verify native PostgreSQL migration and separate web/worker processing
 - [ ] User completes Google OAuth and grants read-only Gmail access
 - [ ] User connects a free HubSpot account with a private-app token
@@ -52,12 +52,12 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - [ ] Record sanitized evidence without correspondence, identities, or credentials
 
 ## Latest verified evidence
-- 136 Vitest tests pass; 3 production API tests pass.
+- 174 Vitest tests pass; four production API tests passed before the integration-hardening changes. CI revalidation pending.
 - ESLint and strict TypeScript pass; production Next.js build passes.
 - Production dependency audit: no known vulnerabilities reported.
 - In-app browser: review/run, exact counts, full thread, download action, history after restart, partial/empty/outage/unsupported states verified.
 - A first-run on-disk PGlite directory bug found in application verification was fixed; clean-directory startup and persistence checked.
-- Four standalone Playwright UI tests cannot launch Chromium under the current macOS sandbox. No pass is claimed.
+- Seven standalone Playwright UI tests cannot launch Chromium under the current macOS sandbox. No pass is claimed.
 - No live accounts, credentials, or data have been accessed.
 
 ## Requirements audit — 2026-09-16

@@ -9,11 +9,12 @@ import type { SegmentSpec } from "@/domain/segment";
 export interface EmailProvider {
   readonly name: "gmail" | "demo" | "outlook";
   validateConnection(): Promise<{ mailbox: string; cursor?: string }>;
-  searchThreads(spec: SegmentSpec): AsyncIterable<string>;
+  searchThreads(
+    spec: SegmentSpec,
+    senderEmails: string[],
+  ): AsyncIterable<string>;
   getThread(id: string): Promise<Thread>;
-  synchronize(
-    cursor: string,
-  ): Promise<{
+  synchronize(cursor: string): Promise<{
     threadIds: string[];
     deletedMessageIds: string[];
     nextCursor: string;

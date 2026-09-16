@@ -2,13 +2,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_QUERY } from "@/domain/segment";
 import type { ExportRow } from "@/domain/models";
-import type {
-  Interpretation,
-  JobResponse,
-  Status,
-  WorkspaceTab,
-} from "./workspace-types";
+import type { Interpretation, Status } from "./workspace-types";
 import { request } from "./workspace-api";
+import { useWorkspaceNavigation } from "./workspace-navigation";
+import { useJob } from "./use-job";
 import {
   Sidebar,
   Topbar,
@@ -34,14 +31,12 @@ export function Workspace() {
     [busy, setBusy] = useState<string | null>(null),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
-  const [jobId, setJobId] = useState<string | null>(null),
-    [data, setData] = useState<JobResponse | null>(null),
-    [scenario, setScenario] = useState("standard"),
+  const [scenario, setScenario] = useState("standard"),
     [selected, setSelected] = useState<ExportRow | null>(null),
     [hubspot, setHubspot] = useState(false),
     [token, setToken] = useState("");
-  const [tab, setTab] = useState<WorkspaceTab>("builder"),
-    [search, setSearch] = useState("");
+  const { tab, jobId, navigate } = useWorkspaceNavigation();
+  const [search, setSearch] = useState("");
   const refresh = useCallback(async () => {
     try {
       setStatus(await request<Status>("status"));
@@ -63,34 +58,18 @@ export function Workspace() {
             ? "Gmail is connected. Your read-only mailbox is ready."
             : "Google connection did not complete. Check consent, scopes, and redirect URI.",
         );
-        window.history.replaceState({}, "", "/");
+        window.history.replaceState({}, "", "/?view=connections");
       }
     }, 0);
     return () => clearTimeout(timer);
   }, [refresh]);
-  useEffect(() => {
-    if (!jobId) return;
-    let stopped = false;
-    const poll = async () => {
-      try {
-        const d = await request<JobResponse>(`jobs/${jobId}`);
-        if (stopped) return;
-        setData(d);
-        if (["succeeded", "partial", "failed"].includes(d.job.status)) {
-          clearInterval(timer);
-          void refresh();
-        }
-      } catch (e) {
-        if (!stopped) setError((e as Error).message);
-      }
-    };
-    const timer = setInterval(() => void poll(), 1000);
-    void poll();
-    return () => {
-      stopped = true;
-      clearInterval(timer);
-    };
-  }, [jobId, refresh]);
+  const {
+    data,
+    active,
+    failed: jobFailed,
+    loadingPage,
+    changePage,
+  } = useJob(jobId, refresh, setError);
   const action = async (name: string, fn: () => Promise<void>) => {
     setBusy(name);
     setError("");
@@ -109,28 +88,25 @@ export function Workspace() {
     });
   const run = () =>
     action("run", async () => {
-      if (!interpretation) return;
+      if (!interpretation || interpretation.query !== query) return;
       const { id } = await request<{ id: string }>("jobs", {
         segmentId: interpretation.id,
         scenario,
       });
-      setData(null);
-      setJobId(id);
+      navigate("builder", id);
       setInterpretation(null);
     });
-  const active =
-    data?.job.status === "running" ||
-    data?.job.status === "queued" ||
-    Boolean(jobId && !data);
   const finished = data && ["succeeded", "partial"].includes(data.job.status);
   const openJob = (id: string) => {
-    const previous = status?.jobs.find((job) => job.id === id);
-    if (previous) setQuery(previous.query);
     setSearch("");
-    setTab("builder");
-    setData(null);
-    setJobId(id);
     setInterpretation(null);
+    navigate("builder", id);
+  };
+  const newDraft = () => {
+    setError("");
+    setInterpretation(null);
+    setSearch("");
+    navigate("builder", null);
   };
   const signIn = () =>
     action("login", async () => {
@@ -142,8 +118,7 @@ export function Workspace() {
     action("logout", async () => {
       await request("logout", {});
       setStatus(null);
-      setData(null);
-      setJobId(null);
+      navigate("builder", null);
       setLogin(true);
     });
   const changeQuery = (value: string) => {
@@ -164,8 +139,7 @@ export function Workspace() {
         "DELETE",
       );
       setNotice(result.message);
-      setJobId(null);
-      setData(null);
+      navigate("connections", null);
       await refresh();
     });
   };
@@ -182,8 +156,7 @@ export function Workspace() {
         undefined,
         "DELETE",
       );
-      setJobId(null);
-      setData(null);
+      navigate("connections", null);
       setInterpretation(null);
       setNotice(result.message);
       await refresh();
@@ -197,10 +170,6 @@ export function Workspace() {
       setNotice("HubSpot is connected and validated.");
       await refresh();
     });
-  const changePage = (offset: number) =>
-    action("page", async () => {
-      setData(await request<JobResponse>(`jobs/${jobId}?offset=${offset}`));
-    });
   if (login)
     return (
       <LoginScreen
@@ -213,17 +182,17 @@ export function Workspace() {
     );
   return (
     <div className="app-shell">
-      <Sidebar
-        status={status}
-        tab={tab}
-        onTabChange={setTab}
-        onSignOut={signOut}
-      />
+      <Sidebar status={status} tab={tab} onTabChange={navigate} />
       <div className="main-shell">
-        <Topbar status={status} tab={tab} />
+        <Topbar
+          status={status}
+          tab={tab}
+          onTabChange={navigate}
+          onSignOut={signOut}
+        />
         <MobileNavigation
           tab={tab}
-          onTabChange={setTab}
+          onTabChange={navigate}
           onSignOut={() => void signOut()}
           live={status?.mode === "live"}
         />
@@ -244,30 +213,51 @@ export function Workspace() {
                   tab={tab}
                   onConnectHubSpot={() => setHubspot(true)}
                   onDisconnect={disconnect}
+                  onSetup={() => navigate("connections")}
                 />
               )}
               {tab === "builder" && (
                 <>
-                  <SegmentForm
-                    status={status}
-                    query={query}
-                    busy={busy}
-                    active={active}
-                    onQueryChange={changeQuery}
-                    onInterpret={interpret}
-                  />
-                  {interpretation && (
-                    <SegmentReview
+                  {!jobId && (
+                    <SegmentForm
                       status={status}
-                      interpretation={interpretation}
-                      scenario={scenario}
+                      query={query}
                       busy={busy}
                       active={active}
-                      onScenarioChange={setScenario}
-                      onRun={run}
+                      onQueryChange={changeQuery}
+                      onInterpret={interpret}
                     />
                   )}
+                  {!jobId &&
+                    interpretation &&
+                    interpretation.query === query && (
+                      <SegmentReview
+                        status={status}
+                        interpretation={interpretation}
+                        scenario={scenario}
+                        busy={busy}
+                        active={active}
+                        onScenarioChange={setScenario}
+                        onRun={run}
+                      />
+                    )}
                   {jobId && (
+                    <div className="saved-run-heading">
+                      <div>
+                        <strong>Saved run</strong>
+                        <p>
+                          {data?.job.query ??
+                            (jobFailed
+                              ? "This run is unavailable."
+                              : "Loading saved criteria…")}
+                        </p>
+                      </div>
+                      <button className="secondary" onClick={newDraft}>
+                        New segment
+                      </button>
+                    </div>
+                  )}
+                  {jobId && !jobFailed && (
                     <JobPanel
                       data={data}
                       active={active}
@@ -281,6 +271,7 @@ export function Workspace() {
                       onSearchChange={setSearch}
                       onSelect={setSelected}
                       onPageChange={changePage}
+                      loadingPage={loadingPage}
                     />
                   )}
                   {!jobId && !interpretation && <StartingState />}
@@ -291,7 +282,7 @@ export function Workspace() {
                   status={status}
                   onRefresh={refresh}
                   onOpenJob={openJob}
-                  onBuildAudience={() => setTab("builder")}
+                  onBuildAudience={newDraft}
                 />
               )}
               {tab === "connections" && (

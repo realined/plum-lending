@@ -131,3 +131,26 @@ test("API rejects hostile origins, invalid specs, unsupported language, missing 
     ).status(),
   ).toBe(413);
 });
+
+test("setup status contains configuration flags rather than secret values", async ({
+  request,
+}) => {
+  const response = await request.get("/api/status");
+  const status = await response.json();
+  expect(status.mode).toBe("demo");
+  expect(status.setup.map((check: { id: string }) => check.id)).toEqual([
+    "database",
+    "security",
+    "google",
+    "openai",
+  ]);
+  for (const check of status.setup) {
+    expect(typeof check.configured).toBe("boolean");
+    expect(Object.keys(check).sort()).toEqual([
+      "configured",
+      "detail",
+      "id",
+      "label",
+    ]);
+  }
+});

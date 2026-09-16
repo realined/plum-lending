@@ -1,3 +1,4 @@
+import { workerStatus } from "./worker-status";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { config } from "./config";
@@ -10,7 +11,7 @@ import {
   signSession,
   cookieOptions,
 } from "./auth";
-import { interpret } from "./parser";
+import { interpret, InterpretationError } from "./parser";
 import { db } from "./database";
 import {
   connectionList,
@@ -25,6 +26,7 @@ import { connectHubSpot, revokeGoogle } from "./connections";
 import { startOAuth, finishOAuth } from "./oauth";
 import { toCsv, CSV_HEADERS, csvCell } from "@/domain/csv";
 import { DEMO_LENDER } from "@/providers/demo";
+import { setupChecks } from "./readiness";
 const uuid = z.uuid();
 let loginFailures = 0,
   loginWindow = 0;
@@ -94,9 +96,11 @@ export async function api(req: NextRequest) {
         mode,
         connections,
         jobs: jobs.map(safeJob),
+        worker: await workerStatus(await db(), mode),
         workerMode: config().embeddedWorker ? "embedded" : "external",
         sponsorProperty: process.env.HUBSPOT_SPONSOR_PROPERTY ?? "contact_type",
         sponsorValue: process.env.HUBSPOT_SPONSOR_VALUE ?? "Sponsor",
+        setup: setupChecks(),
       });
     }
     if (path === "interpret" && req.method === "POST") {
@@ -110,7 +114,8 @@ export async function api(req: NextRequest) {
       } catch (e) {
         const safe =
           e instanceof Error &&
-          (e.message.startsWith("Demo mode") ||
+          (e instanceof InterpretationError ||
+            e.message.startsWith("Demo mode") ||
             e.message.startsWith("This slice") ||
             e.message.startsWith("Configure OPENAI"));
         throw new HttpError(

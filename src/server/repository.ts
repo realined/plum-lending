@@ -247,10 +247,10 @@ export async function completeJob(
     return true;
   });
 }
-export async function failJob(d: Database, id: string, owner: string) {
+export async function failJob(d: Database, id: string, owner: string, error = "A provider or processing step failed. Check connections and try a new run. No complete export was published.") {
   await d.query(
-    "UPDATE export_jobs SET status='failed',stage='Run failed',error='A provider or processing step failed. Check connections and try a new run. No complete export was published.',lease_owner=NULL,lease_until=NULL,updated_at=now() WHERE id=$1 AND lease_owner=$2 AND status='running'",
-    [id, owner],
+    "UPDATE export_jobs SET status='failed',stage='Run failed',error=$3,lease_owner=NULL,lease_until=NULL,updated_at=now() WHERE id=$1 AND lease_owner=$2 AND status='running'",
+    [id, owner, error],
   );
   await d.query(
     "UPDATE sync_jobs SET status='failed',completed_at=now() WHERE export_job_id=$1 AND EXISTS(SELECT 1 FROM export_jobs WHERE id=$1 AND status='failed')",

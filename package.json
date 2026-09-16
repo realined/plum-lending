@@ -20,7 +20,8 @@
     "config:check": "tsx --env-file=.env scripts/check-config.ts",
     "format": "prettier --write src tests e2e scripts *.ts *.mjs",
     "package:source": "python3 scripts/package-source.py",
-    "test:api": "playwright test e2e/api.spec.ts"
+    "test:api": "playwright test e2e/api.spec.ts",
+    "test:postgres": "tsx scripts/verify-postgres.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",

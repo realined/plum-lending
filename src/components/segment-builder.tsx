@@ -78,7 +78,8 @@ export function SegmentForm({
         <p>
           <ShieldCheck size={15} />
           {status.mode === "demo"
-            ? "Synthetic data only · no credentials required"
+            ? "Synthetic data only · no credentials required" +
+              " · use the example wording; AI is available in live mode"
             : "Only this request is sent for AI interpretation"}
         </p>
         <button

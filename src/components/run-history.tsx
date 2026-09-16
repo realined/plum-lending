@@ -36,6 +36,14 @@ export function RunHistory({
             <div>
               <strong>{j.query}</strong>
               <small>
+                {j.mode === "demo"
+                  ? {
+                      standard: "Standard demo",
+                      partial: "Demo: unavailable thread",
+                      empty: "Demo: no matches",
+                      outage: "Demo: provider outage",
+                    }[j.scenario] + " · "
+                  : "Live run · "}
                 {new Date(j.created_at).toLocaleString()} · {j.counts.contacts}{" "}
                 contacts · {j.counts.threads} threads
               </small>
