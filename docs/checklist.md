@@ -31,6 +31,7 @@
 - [x] Final offline security/regression review and source-only archive
 - [x] Initial Git commit on `main`; clean checkout, ignore rules, and repository integrity verified
 - [ ] Create/confirm private GitHub destination and push version history with owner authorization
+- [x] Move the complete checkout to the owner's `~/Projects/plum-lending`; revalidate dependencies, checks, and demo startup
 
 ## Acceptance and risks
 Demo must produce repeatable, explainable rows without credentials; full context outside the qualifying window must survive. Live adapters are exercised with contract mocks AND must pass a real-account acceptance run with the user’s Gmail and free HubSpot account before the submission is complete. Gmail history can expire, HubSpot Sponsor properties vary, and association failures must fail closed. Embedded demo PostgreSQL is single-process; live mode requires PostgreSQL and an always-on worker.

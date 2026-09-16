@@ -114,7 +114,7 @@ Single administrator, mailbox and CRM. Snapshot retrieval is sequential and held
 
 ## Version control
 
-The project is a Git repository on `main`. The initial implementation is preserved in commit `2be9c79`; subsequent changes should be small, reviewable commits after the relevant checks pass. A GitHub remote has not yet been configured or uploaded.
+The project is a Git repository on `main`. The initial implementation is preserved in commit `2be9c79`; subsequent changes should be small, reviewable commits after the relevant checks pass. `origin` points to the approved private GitHub destination, `https://github.com/realined/plum-lending.git`. Repository creation and the first push are pending local GitHub authentication; configuring a remote URL does not prove that a remote repository exists or that source has been uploaded.
 
 ```sh
 git status

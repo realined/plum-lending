@@ -88,3 +88,19 @@ This journal records architectural checkpoints and verified results. Code being 
 **Security and interview talking points.** Explain working tree versus staging versus commits; local history versus remote backup; feature branches and reviewable changes; why ignore rules do not remove already tracked secrets. Pattern scanning is a useful check, not a guarantee that arbitrary sensitive text cannot enter a commit.
 
 **Owner action.** Confirm a private GitHub destination or supply the intended existing repository. This approval concerns remote publication only and does not authorize live Gmail or HubSpot processing.
+
+## Project relocation and remote preparation — 2026-09-16
+
+**Goal.** Put the complete project in the owner's normal Projects directory and publish the existing history to the explicitly approved private `realined/plum-lending` repository.
+
+**Decisions and implementation.** Moved the entire checkout to `~/Projects/plum-lending`, including `.git`, ignored local demo data, and dependencies. Stopped the demo before the move and restarted it afterward. Kept the existing history rather than creating a second repository. Configured the approved HTTPS URL as `origin`; remote creation/upload remains pending authentication.
+
+**Validation.** The destination did not exist, so nothing was overwritten. The move preserved commit `39bcb2b` and a clean working tree. pnpm's dependency cache changed with the parent directory; reinstalled the exact frozen lockfile into the new location. After relocation, lint, strict type checking, all 136 Vitest tests, and the production build passed again. Standard `pnpm start` works, and the demo returned HTTP 200 at localhost:3000. No application source or dependency version changed.
+
+**Data flow and alternatives.** Git history and the working directory move together; dependencies and build output can be regenerated from checked-in source and the lockfile. A symlink or copied second checkout would leave confusing competing locations, so an actual move was selected. The demo remains synthetic and account setup/live acceptance remains pending.
+
+**Remote blocker and security.** The connected GitHub tool cannot create repositories, the browser is signed out, and Git has no HTTPS credential available. Installed the official GitHub CLI in the task's work folder and verified its release SHA-256. The owner must finish the CLI's browser login; no password or token is requested in chat. A configured remote is not a remote backup. Existing ignore rules still apply, and source-only packaging remains separate from private runtime data.
+
+**Remaining work and owner action.** Complete GitHub CLI sign-in as `realined`. Then create the private repository, push existing history, verify its visibility and matching commit SHA, and update this checkpoint. The owner has already authorized repository creation and pushing; no second publication approval is needed.
+
+**Interview talking points.** A Git repository is portable because history lives in `.git`; lockfiles preserve dependency versions while caches are disposable; remote configuration versus a verified push; authentication versus authorization; synthetic verification versus mandatory live acceptance.
