@@ -37,6 +37,7 @@ scripts/migrate.ts
 scripts/package-source.py
 scripts/prepare-live.ts
 scripts/sample.ts
+scripts/verify-postgres-worker.ts
 scripts/verify-postgres.ts
 scripts/worker.ts
 src/app/api/[...path]/route.ts

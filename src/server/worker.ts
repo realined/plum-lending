@@ -1,3 +1,4 @@
+import type { EmailProvider, CRMProvider } from "@/providers/contracts";
 import { randomUUID } from "node:crypto";
 import { DemoCRM, DemoEmail, DEMO_LENDER } from "@/providers/demo";
 import { executeSegment } from "@/domain/executor";
@@ -8,7 +9,14 @@ import { config } from "./config";
 import { touchWorker } from "./worker-status";
 import { safeRunError, type RunStage } from "./job-errors";
 import { liveProviders } from "./connections";
-export async function workOnce(database?: Database) {
+export async function workOnce(
+  database?: Database,
+  resolveProviders?: () => Promise<{
+    email: EmailProvider;
+    crm: CRMProvider;
+    lenders: string[];
+  }>,
+) {
   const d = database ?? (await db());
   const mode = config().mode;
   await touchWorker(d, mode);
@@ -30,8 +38,9 @@ export async function workOnce(database?: Database) {
   timer.unref();
   try {
     const spec = segmentSchema.parse(job.spec);
-    const providers =
-      job.mode === "demo"
+    const providers = resolveProviders
+      ? await resolveProviders()
+      : job.mode === "demo"
         ? {
             email: new DemoEmail(job.scenario),
             crm: new DemoCRM(),

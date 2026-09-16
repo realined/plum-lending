@@ -71,8 +71,8 @@ try {
     assumptions(spec),
     "synthetic PostgreSQL acceptance",
   );
-  // Explicit demo job inside the native DB: real process/database boundaries, synthetic provider data.
-  const id = await enqueue(segment.id, "demo", "standard", database);
+  // Native live-mode queue path; the isolated test worker injects synthetic provider implementations.
+  const id = await enqueue(segment.id, "live", "standard", database);
   launch("node_modules/next/dist/bin/next", [
     "start",
     "--hostname",
@@ -80,7 +80,9 @@ try {
     "--port",
     "3200",
   ]);
-  launch("node_modules/tsx/dist/cli.mjs", ["scripts/worker.ts"]);
+  launch("node_modules/tsx/dist/cli.mjs", [
+    "scripts/verify-postgres-worker.ts",
+  ]);
   const headers = { cookie: `plum_session=${signSession()}` };
   await eventually(async () => {
     const response = await fetch(`${base}/api/jobs/${id}`, { headers });
