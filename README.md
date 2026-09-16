@@ -112,6 +112,18 @@ ESLint 9 and TypeScript 5.9 are pinned because the installed Next.js lint stack 
 
 Single administrator, mailbox and CRM. Snapshot retrieval is sequential and held in memory; large mailboxes need candidate-focused indexing and streaming. Gmail incremental history is implemented as an adapter capability but not scheduled as continuous synchronization. No Outlook or Salesforce adapters are claimed complete. No multitenancy, enterprise SSO, distributed rate limiter, or deployment is included. Read [production notes](docs/production.md) for the deliberate extension seams.
 
+## Version control
+
+The project is a Git repository on `main`. The initial implementation is preserved in commit `2be9c79`; subsequent changes should be small, reviewable commits after the relevant checks pass. A GitHub remote has not yet been configured or uploaded.
+
+```sh
+git status
+git log --oneline -5
+git diff
+```
+
+Work on a feature branch for each meaningful change, review the diff, and stage only intended source files. `.env`, runtime databases, live exports, logs, dependencies, and build output are ignored. Keep real-data evidence out of source files too: ignore rules cannot protect sensitive content copied into tracked documentation. The source ZIP deliberately excludes `.git`; it is a portable snapshot, not a backup of repository history.
+
 ## Interview and operating guides
 
 - [Build journal](docs/build-journal.md) — phase decisions, results, and remaining gates

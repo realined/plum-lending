@@ -72,3 +72,19 @@ This journal records architectural checkpoints and verified results. Code being 
 **Interview talking points.** Layered evidence and honest completion gates; schema validity versus semantic correctness; adapter/account isolation; durable work and fencing; exporting context without sending it to AI. Explain why a memory-only test missed a disk startup bug and why real account configuration cannot be validated by mocks.
 
 **Owner action next.** Follow `live-setup.md`, keep all secrets local, then authorize the defined live acceptance procedure. The agent pauses before account connection/processing; this pause is required by the owner's collaboration protocol, not inferred from a skill.
+
+## Version-control checkpoint — 2026-09-16
+
+**Goal.** Preserve the verified application in reproducible Git history and prepare an owner-approved remote backup.
+
+**Finding and implementation.** Git had been initialized and 83 source files staged, but no commit or remote existed. This was an incomplete handoff. The reviewed source is now committed on `main` as `2be9c79` (`feat: establish Plum Lending proof-of-concept baseline`). README now explains the working-copy workflow and the difference between source ZIPs and Git history; the execution checklist tracks remote setup separately.
+
+**Decisions and data flow.** Keep the existing project location and `main` branch. Reviewed source moves from working tree to staging to local commit; a remote push remains pending. Recommend a private GitHub repository to keep interview work under the owner's control. Reinitializing or moving the project adds no value; a ZIP alone cannot preserve history. No runtime or provider data belongs in this flow.
+
+**Validation.** All 83 staged paths matched the reviewed archive manifest. A scan found no recognized credential patterns. `git diff --cached --check` passed; the initial commit left a clean checkout. Ignore checks verified `.env`, `.env.local`, `.data`, and live exports are excluded, with `.env.example` tracked. `git fsck --no-reflogs` found no corrupt objects; two harmless dangling blobs came from earlier staging. No application code changed and the previously recorded application test results remain the latest evidence.
+
+**Assumptions, limitations, and remaining work.** Use the existing configured Git author identity. There is no remote backup until a push is verified. The authenticated GitHub connector identifies the account as `realined`; querying `realined/plum-lending` returned not found or inaccessible, so no remote is assumed to exist. Confirm destination/visibility before uploading source. No live accounts have been connected; all mandatory live acceptance gates remain open.
+
+**Security and interview talking points.** Explain working tree versus staging versus commits; local history versus remote backup; feature branches and reviewable changes; why ignore rules do not remove already tracked secrets. Pattern scanning is a useful check, not a guarantee that arbitrary sensitive text cannot enter a commit.
+
+**Owner action.** Confirm a private GitHub destination or supply the intended existing repository. This approval concerns remote publication only and does not authorize live Gmail or HubSpot processing.
