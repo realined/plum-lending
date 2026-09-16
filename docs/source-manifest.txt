@@ -16,6 +16,7 @@ docs/interview-walkthrough.md
 docs/live-acceptance.md
 docs/live-setup.md
 docs/production.md
+docs/requirements-audit.md
 docs/security.md
 docs/source-manifest.txt
 drizzle.config.ts

@@ -120,3 +120,19 @@ This journal records architectural checkpoints and verified results. Code being 
 **Remaining work and owner action.** No additional repository approval or action is required. Mandatory Gmail OAuth, HubSpot connection/ingestion, live CSV acceptance, and the previously blocked standalone browser suite remain on the execution plan. Live data processing still requires the owner's explicit authorization.
 
 **Interview talking points.** Local commits versus a remote backup; upstream tracking and branch SHA verification; preserving history with ordinary pushes; private repository access versus application credentials; source publication versus deployment and live acceptance.
+
+## Requirements and interaction audit — 2026-09-16
+
+**Goal.** Reconcile the challenge with observable behavior after the owner reported inactive navigation/menu elements; produce an evidence-based next phase instead of treating demo success as completion.
+
+**Findings and implementation.** Added `docs/requirements-audit.md` with a requirement matrix, control inventory, data flow, gaps, and completion gates. Updated the execution checklist. The three real sidebar buttons and thread drawer work. Workspace chevron, breadcrumb, top-right avatar and lower-left profile are static shell elements; only the live-mode sign-out button has profile behavior. Demo connection buttons are hidden and the parser is rules-based. No application behavior changed in this audit.
+
+**Decisions and alternatives.** Preserve the current stack and single-workspace scope. Fix misleading controls and setup guidance before live account acceptance; do not fill empty menus with unrelated settings or implement multitenancy. Treat code, mocked contracts, synthetic end-to-end execution, and real-account proof as separate evidence. Do not declare all integrations complete based on tests.
+
+**Validation.** Compared the original request and owner amendments with saved challenge text (fresh challenge retrieval returned HTTP 403), inspected implementation and test boundaries, and verified all sidebar tabs plus full chronological thread context in the supported browser. Fresh isolated production API tests: 3 passed in 6.1 seconds. Prior unchanged-source evidence: 136 Vitest tests, lint, types, production build passing. Standalone browser launch remains unverified. No live data processed and no secrets inspected.
+
+**Assumptions, risks and remaining work.** Core workflow is an on-demand snapshot export, not continuous synchronization. Gmail history/cursor support is not invoked or advanced by the worker. OAuth start/callback and OpenAI response-boundary tests are absent. Gmail currently retrieves every date-window candidate thread before contact matching, including when no CRM contacts qualify; review retrieval breadth and measure runtime before personal-mail ingestion. Improve sanitized errors/readiness and separate new drafts from old results. Native PostgreSQL/separate worker and mandatory live Gmail/HubSpot/OpenAI/export acceptance remain pending.
+
+**Interview talking points.** Honest interaction affordances; evidence levels; deterministic eligibility with full thread context; durable jobs versus incremental sync; data minimization and measurable runtime. Earlier visual QA covered the main export flow but missed the shell interaction inventory; this audit corrects the plan, not that implementation yet.
+
+**Owner action.** No credentials needed for this review. Next engineering phase is UI interaction completion and offline boundary verification, followed by guided account setup with explicit authorization before live connections and processing. Full assessment and acceptance criteria are in `requirements-audit.md`.

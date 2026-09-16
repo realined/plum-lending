@@ -23,6 +23,9 @@
 - [x] Empty, unsupported-query, loading, error, partial success states
 - [x] Critical flows and responsive visual review in supported in-app browser
 - [ ] Standalone Playwright browser suite (4 tests): launch blocked by macOS sandbox; run outside sandbox
+- [ ] Complete shell interaction audit fixes: workspace chevron, breadcrumb, upper avatar, lower profile; no misleading inactive controls
+- [ ] Add URL-backed navigation and distinguish edited drafts from prior run results
+- [ ] Make demo parsing limitations, live setup readiness, and demo history scenarios explicit
 
 ## 4. Handoff
 - [x] Setup, architecture, security, production expansion notes
@@ -37,11 +40,15 @@
 Demo must produce repeatable, explainable rows without credentials; full context outside the qualifying window must survive. Live adapters are exercised with contract mocks AND must pass a real-account acceptance run with the user’s Gmail and free HubSpot account before the submission is complete. Gmail history can expire, HubSpot Sponsor properties vary, and association failures must fail closed. Embedded demo PostgreSQL is single-process; live mode requires PostgreSQL and an always-on worker.
 
 ## Mandatory live acceptance (user clarification)
+- [ ] Close automated OAuth start/callback and live-parser response-boundary coverage gaps
+- [ ] Review/narrow mailbox candidate retrieval and retain safe, actionable failure categories before personal-account ingestion
+- [ ] Verify native PostgreSQL migration and separate web/worker processing
 - [ ] User completes Google OAuth and grants read-only Gmail access
 - [ ] User connects a free HubSpot account with a private-app token
 - [ ] Ingest real data from both services
 - [ ] Verify deterministic eligibility and complete thread preservation against selected real records
 - [ ] Generate and download a CSV from live-connected data
+- [ ] Measure actual dataset size and elapsed runtime against the challenge target
 - [ ] Record sanitized evidence without correspondence, identities, or credentials
 
 ## Latest verified evidence
@@ -52,3 +59,11 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - A first-run on-disk PGlite directory bug found in application verification was fixed; clean-directory startup and persistence checked.
 - Four standalone Playwright UI tests cannot launch Chromium under the current macOS sandbox. No pass is claimed.
 - No live accounts, credentials, or data have been accessed.
+
+## Requirements audit — 2026-09-16
+- [x] Reconcile original brief, owner clarification, source code and visible UI; see `requirements-audit.md`
+- [x] Verify all three sidebar destinations and the complete-thread drawer in the supported browser
+- [x] Rerun isolated production API workflow tests: 3 passed in 6.1 seconds
+- [ ] Resolve the newly identified interaction and integration-proof gaps above
+
+The completed admin-flow items cover the core synthetic export journey. They do not imply that every element styled as a menu is interactive or that live integration has passed. Current phase: interaction completion and offline integration proof, followed by mandatory owner-approved real-account acceptance. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.

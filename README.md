@@ -126,6 +126,7 @@ Work on a feature branch for each meaningful change, review the diff, and stage 
 
 ## Interview and operating guides
 
+- [Requirements and UI wiring audit](docs/requirements-audit.md) — current evidence, unfinished interactions, and next acceptance gates
 - [Build journal](docs/build-journal.md) — phase decisions, results, and remaining gates
 - [Architecture and ADR](docs/architecture.md)
 - [Assumptions](docs/assumptions.md)
