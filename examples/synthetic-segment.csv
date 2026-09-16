@@ -1,0 +1,55 @@
+﻿"Email Subject","Email Body","Account Name","First Name","Last Name","Email","Last Activity Date","Raw Communication Data"
+"Cedar House · bridge loan request","[2024-09-16T12:00:00.000Z] Casey <casey@sponsor3.example.test> → lending@plum.example.test
+Subject: Cedar House · bridge loan request
+We are looking for a bridge facility for Cedar House. Can we discuss a $6 million request?
+
+────────────
+
+[2024-09-17T08:30:00.000Z] Plum lending team <lending@plum.example.test> → casey@sponsor3.example.test
+Subject: Cedar House · bridge loan request
+We can review the opportunity. What is your stabilization timeline?
+
+────────────
+
+[2025-01-08T13:40:00.000Z] Casey <casey@sponsor3.example.test> → lending@plum.example.test
+Subject: Cedar House · bridge loan request
+Our stabilization plan is 18 months. The capital expenditure schedule is ready for review.","Cedar House Group","Casey","Reed","casey@sponsor3.example.test","2025-01-08T13:40:00.000Z","{""provider"":""demo"",""providerThreadId"":""t3"",""subject"":""Cedar House · bridge loan request"",""messages"":[{""providerMessageId"":""m7"",""providerThreadId"":""t3"",""subject"":""Cedar House · bridge loan request"",""from"":{""email"":""casey@sponsor3.example.test"",""name"":""Casey""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2024-09-16T12:00:00.000Z"",""text"":""We are looking for a bridge facility for Cedar House. Can we discuss a $6 million request?"",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":0},{""providerMessageId"":""m8"",""providerThreadId"":""t3"",""subject"":""Cedar House · bridge loan request"",""from"":{""email"":""lending@plum.example.test"",""name"":""Plum lending team""},""to"":[{""email"":""casey@sponsor3.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2024-09-17T08:30:00.000Z"",""text"":""We can review the opportunity. What is your stabilization timeline?"",""sanitizedHtml"":null,""direction"":""outbound"",""attachments"":[],""position"":1},{""providerMessageId"":""m9"",""providerThreadId"":""t3"",""subject"":""Cedar House · bridge loan request"",""from"":{""email"":""casey@sponsor3.example.test"",""name"":""Casey""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-01-08T13:40:00.000Z"",""text"":""Our stabilization plan is 18 months. The capital expenditure schedule is ready for review."",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":2}]}"
+"Juniper Park · acquisition financing","[2024-08-20T10:00:00.000Z] Avery <avery@sponsor1.example.test> → lending@plum.example.test
+Subject: Juniper Park · acquisition financing
+We are evaluating a 72-unit acquisition at Juniper Park. Could your team outline financing options?
+
+────────────
+
+[2025-02-12T14:20:00.000Z] Avery <avery@sponsor1.example.test> → lending@plum.example.test
+Subject: Juniper Park · acquisition financing
+Attached is our updated property overview. We are seeking a $12 million acquisition facility with a 24-month term.
+
+────────────
+
+[2025-02-13T09:10:00.000Z] Plum lending team <lending@plum.example.test> → avery@sponsor1.example.test
+Subject: Juniper Park · acquisition financing
+Thanks, Avery. Please share the current rent roll and renovation budget so we can assess the structure.
+
+────────────
+
+[2026-08-03T16:45:00.000Z] Avery <avery@sponsor1.example.test> → lending@plum.example.test
+Subject: Juniper Park · acquisition financing
+Our timing has moved to Q4. Keeping this thread open for the updated package.","Juniper Capital","Avery","Morgan","avery@sponsor1.example.test","2026-08-03T16:45:00.000Z","{""provider"":""demo"",""providerThreadId"":""t1"",""subject"":""Juniper Park · acquisition financing"",""messages"":[{""providerMessageId"":""m1"",""providerThreadId"":""t1"",""subject"":""Juniper Park · acquisition financing"",""from"":{""email"":""avery@sponsor1.example.test"",""name"":""Avery""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2024-08-20T10:00:00.000Z"",""text"":""We are evaluating a 72-unit acquisition at Juniper Park. Could your team outline financing options?"",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":0},{""providerMessageId"":""m2"",""providerThreadId"":""t1"",""subject"":""Juniper Park · acquisition financing"",""from"":{""email"":""avery@sponsor1.example.test"",""name"":""Avery""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-02-12T14:20:00.000Z"",""text"":""Attached is our updated property overview. We are seeking a $12 million acquisition facility with a 24-month term."",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[{""providerAttachmentId"":""att-1"",""filename"":""Juniper-property-overview.pdf"",""mimeType"":""application/pdf"",""size"":182400}],""position"":1},{""providerMessageId"":""m3"",""providerThreadId"":""t1"",""subject"":""Juniper Park · acquisition financing"",""from"":{""email"":""lending@plum.example.test"",""name"":""Plum lending team""},""to"":[{""email"":""avery@sponsor1.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-02-13T09:10:00.000Z"",""text"":""Thanks, Avery. Please share the current rent roll and renovation budget so we can assess the structure."",""sanitizedHtml"":null,""direction"":""outbound"",""attachments"":[],""position"":2},{""providerMessageId"":""m4"",""providerThreadId"":""t1"",""subject"":""Juniper Park · acquisition financing"",""from"":{""email"":""avery@sponsor1.example.test"",""name"":""Avery""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2026-08-03T16:45:00.000Z"",""text"":""Our timing has moved to Q4. Keeping this thread open for the updated package."",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":3}]}"
+"Juniper · second-phase development","[2025-11-04T10:30:00.000Z] Avery <avery@sponsor1.example.test> → lending@plum.example.test
+Subject: Juniper · second-phase development
+A separate opportunity: we are planning phase two of our Juniper development. Would a construction-to-permanent structure fit?
+
+────────────
+
+[2025-11-05T14:15:00.000Z] Plum lending team <lending@plum.example.test> → avery@sponsor1.example.test
+Subject: Juniper · second-phase development
+Please share the project schedule and sponsor equity commitment; we will review the options.","Juniper Capital","Avery","Morgan","avery@sponsor1.example.test","2025-11-05T14:15:00.000Z","{""provider"":""demo"",""providerThreadId"":""t9"",""subject"":""Juniper · second-phase development"",""messages"":[{""providerMessageId"":""m15"",""providerThreadId"":""t9"",""subject"":""Juniper · second-phase development"",""from"":{""email"":""avery@sponsor1.example.test"",""name"":""Avery""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-11-04T10:30:00.000Z"",""text"":""A separate opportunity: we are planning phase two of our Juniper development. Would a construction-to-permanent structure fit?"",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":0},{""providerMessageId"":""m16"",""providerThreadId"":""t9"",""subject"":""Juniper · second-phase development"",""from"":{""email"":""lending@plum.example.test"",""name"":""Plum lending team""},""to"":[{""email"":""avery@sponsor1.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-11-05T14:15:00.000Z"",""text"":""Please share the project schedule and sponsor equity commitment; we will review the options."",""sanitizedHtml"":null,""direction"":""outbound"",""attachments"":[],""position"":1}]}"
+"Northline · multifamily refinance","[2025-05-19T11:30:00.000Z] Jordan <jordan@sponsor2.example.test> → lending@plum.example.test
+Subject: Northline · multifamily refinance
+We would like to revisit refinancing our Northline multifamily portfolio. The previous transaction did not proceed.
+
+────────────
+
+[2025-05-20T15:00:00.000Z] Plum lending team <lending@plum.example.test> → jordan@sponsor2.example.test
+Subject: Northline · multifamily refinance
+Happy to reconnect. Please send the portfolio operating statements and your target proceeds.","Northline Partners","Jordan","Ellis","jordan@sponsor2.example.test","2025-05-20T15:00:00.000Z","{""provider"":""demo"",""providerThreadId"":""t2"",""subject"":""Northline · multifamily refinance"",""messages"":[{""providerMessageId"":""m5"",""providerThreadId"":""t2"",""subject"":""Northline · multifamily refinance"",""from"":{""email"":""jordan@sponsor2.example.test"",""name"":""Jordan""},""to"":[{""email"":""lending@plum.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-05-19T11:30:00.000Z"",""text"":""We would like to revisit refinancing our Northline multifamily portfolio. The previous transaction did not proceed."",""sanitizedHtml"":null,""direction"":""inbound"",""attachments"":[],""position"":0},{""providerMessageId"":""m6"",""providerThreadId"":""t2"",""subject"":""Northline · multifamily refinance"",""from"":{""email"":""lending@plum.example.test"",""name"":""Plum lending team""},""to"":[{""email"":""jordan@sponsor2.example.test"",""name"":""""}],""cc"":[],""bcc"":[],""timestamp"":""2025-05-20T15:00:00.000Z"",""text"":""Happy to reconnect. Please send the portfolio operating statements and your target proceeds."",""sanitizedHtml"":null,""direction"":""outbound"",""attachments"":[],""position"":1}]}"

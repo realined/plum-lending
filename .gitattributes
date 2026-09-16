@@ -1,0 +1,2 @@
+# Keep CSV record terminators intact; CRLF is intentional, not trailing whitespace.
+*.csv -text whitespace=cr-at-eol

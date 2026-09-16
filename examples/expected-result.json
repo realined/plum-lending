@@ -1,0 +1,33 @@
+{
+  "counts": {
+    "contacts": 3,
+    "threads": 4,
+    "messages": 11,
+    "excluded": 5,
+    "failures": 0,
+    "scannedContacts": 8
+  },
+  "exclusions": {
+    "Closed Won deal": 1,
+    "Not a Sponsor": 1,
+    "No qualifying inbound email": 3
+  },
+  "rowKeys": [
+    [
+      "c3",
+      "t3"
+    ],
+    [
+      "c1",
+      "t1"
+    ],
+    [
+      "c1",
+      "t9"
+    ],
+    [
+      "c2",
+      "t2"
+    ]
+  ]
+}
