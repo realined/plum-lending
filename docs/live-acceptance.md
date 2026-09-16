@@ -55,7 +55,7 @@ Record total CRM contacts scanned, matched contacts/threads/messages, CSV row co
 | --- | --- |
 | Owner authorization | Pending |
 | Date/time of test | Pending |
-| Native PostgreSQL migration / worker | Pending |
+| Native PostgreSQL migration / worker | CI infrastructure check passed with synthetic providers; owner local/live run pending |
 | Live Gmail OAuth | Pending |
 | Live HubSpot validation | Pending |
 | Live OpenAI interpretation and semantic cases | Pending |

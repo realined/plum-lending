@@ -2,7 +2,7 @@
 
 A working interview POC for turning CRM relationships and complete email conversations into an explainable contact audience and downloadable CSV.
 
-**Submission status: local implementation verified; mandatory real-account acceptance and a normal-environment Playwright UI run are pending.** Demo mode and mocked provider tests are development aids. The integration is not considered complete until the user's own Gmail and free HubSpot account have passed the live checklist in [docs/live-acceptance.md](docs/live-acceptance.md).
+**Submission status: offline implementation, Linux browser tests and native PostgreSQL process checks verified; mandatory real-account acceptance remains pending.** Demo mode and mocked provider tests are development aids. The integration is not considered complete until the user's own Gmail and free HubSpot account have passed the live checklist in [docs/live-acceptance.md](docs/live-acceptance.md).
 
 ![Synthetic demo interface](docs/demo-preview.png)
 
@@ -102,7 +102,7 @@ pnpm sample            # regenerates synthetic CSV and expected counts
 python3 scripts/package-source.py
 ```
 
-Verified locally: **136 Vitest tests, 3 production API tests, lint, strict types, production build, and a production dependency audit pass**. The supported in-app browser verified the UI flows and responsive layout. Four standalone Playwright UI tests were blocked at Chromium launch by macOS sandbox permissions; they are not recorded as passed.
+Verified locally and in [Linux CI](https://github.com/realined/plum-lending/actions/runs/35142338893): **174 Vitest tests, lint, strict types and production build pass**. CI also passed **11 end-to-end tests (7 browser + 4 API)** and a native PostgreSQL 17 check with concurrent migrations, separate web/worker processes, authentication and full-thread CSV output. The native worker uses explicitly injected synthetic providers; this is infrastructure proof, not live Gmail/HubSpot acceptance. The Mac sandbox still blocks standalone Chromium, but supported-browser desktop/mobile checks and Linux Chromium both passed. The previous production dependency audit reported no known vulnerabilities.
 
 Run `pnpm build` before browser tests. Tests never call real providers. PGlite integration tests exercise real PostgreSQL SQL semantics; native PostgreSQL connectivity and provider consent remain part of mandatory live validation. The source-only archive is a development handoff, not a completed live submission. A generated source manifest limits archive contents; do not zip the entire directory.
 

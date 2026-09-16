@@ -173,3 +173,20 @@ This journal records architectural checkpoints and verified results. Code being 
 **First Linux CI result.** Run `35141432772` passed lint/types, 174 tests, production build and 9/11 end-to-end tests. Two tests used ambiguous locators: readable message text also appeared inside normalized JSON, and Next's route announcer also had `role=alert`. Scoped the message assertions to exact text and the error assertion to its message. These were test-selection defects, not evidence of a passing full suite. The PostgreSQL smoke check was not reached. Verification is being rerun.
 
 **Second Linux CI result.** Run `35141899203` passed 10/11 end-to-end tests. The remaining assertion required the filename as the entire element text, but the attachment element also includes its size/metadata label. Verified the element in the supported browser and scoped the assertion to the attachment container. No application behavior changed; the complete download/history test and PostgreSQL gate are being rerun.
+
+
+## CI verification and live setup handoff — 2026-09-16
+
+**Goal.** Close the standalone-browser and native-database evidence gaps, then pause at the owner's requested credential/live-data boundary.
+
+**Implementation and data flow.** `.github/workflows/verify.yml` uses pinned official actions, Node 22, the frozen pnpm lockfile, real Chromium and an isolated PostgreSQL 17 service. `verify-postgres.ts` runs concurrent migrations, persists a synthetic request into the live-mode queue, starts the production web server and a separate test worker process, then verifies authenticated results/CSV. `verify-postgres-worker.ts` injects `DemoCRM`/`DemoEmail` through the existing provider interfaces and forbids HTTP. The ordinary production worker uses the default live providers; no environment flag can silently replace them with mocks.
+
+**Results.** [CI run 35142338893](https://github.com/realined/plum-lending/actions/runs/35142338893) passed at application commit `5c6de87`: lint, strict TypeScript, 174 Vitest tests, production build, 11/11 end-to-end tests in 21.2 seconds, and native PostgreSQL concurrent migrations/separate processes/authentication/4 CSV rows/full-context preservation. The local demo was restarted from the verified build and its setup page shows the embedded worker heartbeat. Final documentation changes do not alter the verified application code.
+
+**Decisions/alternatives.** Used Linux CI because macOS sandbox restrictions prevent standalone Chromium launch. Avoided weakening that sandbox or changing product runtime isolation. A test-only provider composition exercises native storage/worker boundaries without credentials; it is not passed off as real-service proof. Retained the existing stack, on-demand snapshot semantics and single workspace.
+
+**Assumptions, limitations and security.** All test data are synthetic. CI receives no provider secrets and has read-only repository permissions. Owner-local Docker/PostgreSQL has not been configured. Gmail OAuth consent, live HubSpot property/associations, actual model semantics, realistic runtime and real-data CSV remain mandatory. Sequential CRM/thread work and in-memory normalization remain scale limits; incremental sync and large-volume recovery are deferred. Source-only packaging excludes environment files, database contents and browser traces.
+
+**Interview talking points.** Test doubles at provider boundaries; native infrastructure versus live-service acceptance; precise accessible test selectors; search narrowing versus deterministic filtering; heartbeats versus leases and provider health.
+
+**Owner action / current phase.** Choose Docker Desktop with the supplied Compose database or an existing PostgreSQL 17 database (question pending). Follow `docs/live-setup.md` to configure credentials locally. No setup command, account connection, provider consent or live ingestion has been executed by the agent. The pause is required by the owner's explicit collaboration protocol. After configuration, the owner must authorize connection and read-only processing before the procedure in `docs/live-acceptance.md` begins. This phase is prepared, not completed.

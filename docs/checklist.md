@@ -22,7 +22,7 @@
 - [x] Results, full-thread inspection, download
 - [x] Empty, unsupported-query, loading, error, partial success states
 - [x] Critical flows and responsive visual review in supported in-app browser
-- [ ] Standalone Playwright browser suite (7 tests): launch blocked by macOS sandbox; run outside sandbox
+- [x] Standalone Playwright browser suite: 7 UI tests passed in Linux CI (plus 4 API tests); Mac sandbox launch limitation remains local
 - [x] Complete shell interaction audit fixes: workspace chevron, breadcrumb, upper avatar, lower profile; no misleading inactive controls
 - [x] Add URL-backed navigation and distinguish edited drafts from prior run results
 - [x] Make demo parsing limitations, live setup readiness, and demo history scenarios explicit
@@ -42,7 +42,8 @@ Demo must produce repeatable, explainable rows without credentials; full context
 ## Mandatory live acceptance (user clarification)
 - [x] Close automated OAuth start/callback and live-parser response-boundary coverage gaps
 - [x] Review/narrow mailbox candidate retrieval and retain safe, actionable failure categories before personal-account ingestion
-- [ ] Verify native PostgreSQL migration and separate web/worker processing
+- [x] Verify native PostgreSQL migrations and separate web/worker processing in CI with explicitly injected synthetic providers
+- [ ] Verify the owner's local PostgreSQL and production worker with real account connections
 - [ ] User completes Google OAuth and grants read-only Gmail access
 - [ ] User connects a free HubSpot account with a private-app token
 - [ ] Ingest real data from both services
@@ -52,18 +53,18 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - [ ] Record sanitized evidence without correspondence, identities, or credentials
 
 ## Latest verified evidence
-- 174 Vitest tests pass; four production API tests passed before the integration-hardening changes. CI revalidation pending.
+- 174 Vitest tests and all 11 production end-to-end tests (7 browser + 4 API) pass.
 - ESLint and strict TypeScript pass; production Next.js build passes.
 - Production dependency audit: no known vulnerabilities reported.
 - In-app browser: review/run, exact counts, full thread, download action, history after restart, partial/empty/outage/unsupported states verified.
 - A first-run on-disk PGlite directory bug found in application verification was fixed; clean-directory startup and persistence checked.
-- Seven standalone Playwright UI tests cannot launch Chromium under the current macOS sandbox. No pass is claimed.
+- Linux Chromium: 11/11 tests passed in 21.2 seconds. Native PostgreSQL process/CSV check passed. [CI evidence](https://github.com/realined/plum-lending/actions/runs/35142338893) at application commit `5c6de87`.
 - No live accounts, credentials, or data have been accessed.
 
 ## Requirements audit — 2026-09-16
 - [x] Reconcile original brief, owner clarification, source code and visible UI; see `requirements-audit.md`
 - [x] Verify all three sidebar destinations and the complete-thread drawer in the supported browser
 - [x] Rerun isolated production API workflow tests: 3 passed in 6.1 seconds
-- [ ] Resolve the newly identified interaction and integration-proof gaps above
+- [x] Resolve the shell interaction and offline integration-boundary gaps; real-account acceptance remains open
 
-The completed admin-flow items cover the core synthetic export journey. They do not imply that every element styled as a menu is interactive or that live integration has passed. Current phase: interaction completion and offline integration proof, followed by mandatory owner-approved real-account acceptance. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.
+The shell and core synthetic export journey are verified. Current phase: owner account setup, followed by explicitly authorized real-account acceptance. Configuration readiness, mocked contracts, native infrastructure checks and live-service proof remain separate evidence levels. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.

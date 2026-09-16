@@ -16,7 +16,7 @@ Production bootstrap should capture a high-water history cursor before the full 
 
 ## Scaling jobs and exports
 
-The queue uses PostgreSQL atomic claims, SKIP LOCKED, leases, heartbeats, bounded recovery, stable entity IDs, and conditional transactional publication. Add independent supervisors, readiness/health endpoints, metrics, dead-letter tooling, explicit cancellation, per-tenant concurrency limits and worker shutdown grace periods. Persist per-thread checkpoints if replay costs become material. Validate behavior on native PostgreSQL and multiple real processes, not only embedded engine tests.
+The queue uses PostgreSQL atomic claims, SKIP LOCKED, leases, heartbeats, bounded recovery, stable entity IDs, and conditional transactional publication. Add independent supervisors, readiness/health endpoints, metrics, dead-letter tooling, explicit cancellation, per-tenant concurrency limits and worker shutdown grace periods. Persist per-thread checkpoints if replay costs become material. The CI smoke test verifies native PostgreSQL and separate web/fixture-worker processes. Production still needs multi-worker contention, crash/load, recovery and operational acceptance with real provider behavior.
 
 Current provider retrieval is sequential and memory-bound. Before handling a large mailbox, identify eligible contacts first, use bounded provider search batches, cache normalized threads by generation, and process/save records in chunks. Preserve an exclusion audit and separate inaccessible data from nonmatches. CSV responses are paged/streamed; for very large exports, stream into encrypted object storage and issue short-lived authorized downloads.
 
