@@ -35,14 +35,18 @@ test("review, run, inspect full context, download and reopen history", async ({
   await expect(
     page.getByText(
       "Our timing has moved to Q4. Keeping this thread open for the updated package.",
+      { exact: true },
     ),
   ).toBeVisible();
   await expect(
     page.getByText(
       "We are evaluating a 72-unit acquisition at Juniper Park. Could your team outline financing options?",
+      { exact: true },
     ),
   ).toBeVisible();
-  await expect(page.getByText("Juniper-property-overview.pdf")).toBeVisible();
+  await expect(
+    page.getByText("Juniper-property-overview.pdf", { exact: true }),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("link", { name: "Download CSV" }).click();
@@ -206,7 +210,9 @@ test("mobile account menu and a missing saved run provide a way forward", async 
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/?view=builder&run=00000000-0000-4000-8000-000000000000");
-  await expect(page.getByRole("alert")).toContainText("Run not found");
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Run not found" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "New segment", exact: true }).click();
   await expect(page.getByLabel("Segment request")).toBeVisible();
   await page.getByRole("button", { name: "Account menu", exact: true }).click();

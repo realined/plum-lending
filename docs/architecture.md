@@ -11,8 +11,11 @@ Natural language → constrained intent → Zod validation → server-resolved S
 - PostgreSQL stores canonical entities, interpretation records, jobs, connections, cursor state, and export rows. Drizzle describes the relational model. Parameterized SQL implements queue operations where atomic lease semantics are clearest.
 - No Docker is available in the development environment. Credential-free demo uses PGlite (embedded PostgreSQL), preserving SQL semantics and on-disk durability. It runs one Next.js process with a worker loop. Live mode requires PostgreSQL and an independent long-lived worker; there is no fire-and-forget request task or serverless guarantee. Demo ignores DATABASE_URL entirely, and queue claims enforce mode, preventing accidental live-data exposure in an unauthenticated demo.
 - Job claims use atomic UPDATE with a locked candidate; a lease token fences stale workers. Heartbeats extend leases. Expired jobs are replayed with stable IDs and bounded attempts. Successful rows survive per-contact/thread failures. Export updates are conditional on owning the lease.
-- Gmail searches broadly by date, including Spam and Trash, then retrieves complete threads and evaluates exact participant/timestamp conditions locally. HubSpot adapters fetch paginated objects and explicit paginated contact associations; custom pipeline metadata determines Won status.
-- The first slice takes a fresh CRM snapshot and date-bounded Gmail search per job. Gmail incremental history is exposed through the provider interface and tested; full background incremental materialization and webhooks are a documented next step.
+- CRM eligibility is evaluated first. Gmail searches bounded batches of validated eligible sender addresses and slightly broadened epoch dates, including Spam and Trash, then retrieves complete candidate threads and evaluates exact participant/timestamp conditions locally. HubSpot adapters fetch paginated objects and explicit paginated contact associations; custom pipeline metadata determines Won status.
+- The first slice takes a fresh CRM snapshot and CRM-scoped, date-bounded Gmail search per job. Gmail incremental history is exposed through the provider interface and tested; full background incremental materialization and webhooks are a documented next step.
+
+- URL search parameters own the selected view and saved run. Draft query text remains transient; saved results always display their original immutable query. Polling is abortable and serialized.
+- A mode-scoped worker heartbeat is separate from each job's expiring lease. Readiness exposes recent/stale/unseen worker observations; setup checks expose configuration shape without contacting external services.
 
 ## Boundaries
 

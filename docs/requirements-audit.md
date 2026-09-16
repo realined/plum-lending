@@ -1,5 +1,8 @@
 # Requirements and UI wiring audit
 
+> Follow-up implementation checkpoint: the shell controls, URL navigation, draft/result separation, setup flags and scenario labels below have now been implemented and manually verified. OAuth/AI boundary coverage, CRM-scoped Gmail retrieval, safe job errors and worker heartbeat are also implemented; 174 offline tests pass. Linux browser/PostgreSQL CI is pending verification. This audit retains the original findings as historical context; `checklist.md` and `build-journal.md` track the current evidence. No real-account acceptance has occurred.
+
+
 Reviewed 2026-09-16 against application commit `1b790a7`, the owner's original request and later live-acceptance clarification, and the locally preserved challenge page. A fresh request to the challenge page returned HTTP 403 during this review, so its previously downloaded text was used. No live provider connection or processing was performed.
 
 **Assessment: working synthetic export workflow; unfinished interaction design; real-account proof still outstanding. Not ready for submission.** The application has a real API, database, job worker, deterministic executor, normalized results, and CSV stream. The current demo substitutes fixtures for Gmail/HubSpot and a bounded rules parser for OpenAI. The surrounding interface also includes static elements styled like controls. These are different gaps and need different remedies.

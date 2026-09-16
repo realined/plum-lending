@@ -4,9 +4,20 @@ Do this only after the owner approves connecting the accounts. Creating configur
 
 ## 1. Local runtime and database
 
-Use Node.js 22 LTS or newer and pnpm. From the repository:
+Use Node.js 22 LTS or newer and pnpm. On the owner's current workstation, the verified bundled Node/pnpm binaries are available for this terminal session with:
 
 ```sh
+export PATH="/Users/leebennett/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH"
+node --version
+pnpm --version
+```
+
+This changes only the current shell's tool lookup. On another machine, install Node 22+ and pnpm 11.19+ normally. Docker/PostgreSQL are not currently installed on the verified local PATH; install and start Docker Desktop or supply an existing PostgreSQL 17 database before proceeding.
+
+From `/Users/leebennett/Projects/plum-lending`:
+
+```sh
+cd /Users/leebennett/Projects/plum-lending
 pnpm install --frozen-lockfile
 pnpm setup:live
 ```
@@ -28,7 +39,7 @@ Alternatively use an existing PostgreSQL 17 database and set `DATABASE_URL` loca
 3. For an external test app, keep Publishing status **Testing** and add your own Gmail address as a **test user** under Audience. Add the data-access scope `https://www.googleapis.com/auth/gmail.readonly`.
 4. Create an OAuth client with application type **Web application**. Add exactly this authorized redirect URI: `http://localhost:3000/api/connections/gmail/callback`.
 5. Copy the client ID and client secret into your local `.env` fields `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Do not use a service-account key or paste a Gmail password.
-6. Keep `APP_URL=http://localhost:3000` and `GOOGLE_REDIRECT_URI=http://localhost:3000/api/connections/gmail/callback` identical in origin. Use the `localhost` URL in the browser, not `127.0.0.1`, because mutation origin checks are exact.
+6. Keep `APP_URL=http://localhost:3000` and `GOOGLE_REDIRECT_URI=http://localhost:3000/api/connections/gmail/callback` configured exactly as shown. Use the `localhost` URL in the browser, not `127.0.0.1`, because mutation origin checks are exact.
 7. Set `LENDER_ALIASES` only if the connected mailbox has other addresses it owns that should count as lender recipients. Separate addresses with commas; leave blank otherwise. The primary mailbox address is read from Gmail's profile endpoint.
 
 The app handles consent, PKCE, state validation, authorization-code exchange, encrypted refresh-token storage, and refresh automatically. Do not manually create access/refresh tokens. Testing-mode Google grants with these scopes generally have a seven-day refresh-token lifetime; reconnect for an expired test grant. Gmail read-only is a restricted scope; public production distribution has additional verification requirements. [Google OAuth server flow](https://developers.google.com/identity/protocols/oauth2/web-server), [token expiration](https://developers.google.com/identity/protocols/oauth2#expiration).
@@ -68,6 +79,22 @@ Only the segmentation query is sent, with `store:false`. The system sends no Gma
 | `OPENAI_API_KEY` | Your project API key |
 | `OPENAI_MODEL` | A structured-output capable model available to your project |
 
+After setup, edit `.env` in a local editor. The provider fields you fill look like this (these are placeholders, never real credentials):
+
+```dotenv
+GOOGLE_CLIENT_ID=<your web OAuth client ID>
+GOOGLE_CLIENT_SECRET=<your web OAuth client secret>
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/connections/gmail/callback
+OPENAI_API_KEY=<your project API key>
+OPENAI_MODEL=gpt-4.1-mini
+HUBSPOT_SPONSOR_PROPERTY=contact_type
+HUBSPOT_SPONSOR_VALUE=Sponsor
+HUBSPOT_PRIVATE_APP_TOKEN=
+LENDER_ALIASES=
+```
+
+Keep the generated administrator/session/encryption values. Fill values only in the private file, without angle brackets; the masked HubSpot form is used later, after authorization.
+
 Do not print `.env` to verify it. The configuration checker reports missing **field names only**:
 
 ```sh
@@ -82,6 +109,8 @@ In a second terminal in the same directory:
 ```sh
 pnpm worker
 ```
+
+In Connections → Live account setup, verify that the worker heartbeat is recent. Configuration flags describe presence/shape, not verified provider access.
 
 The web and worker processes load the same `.env` file. Restart both after configuration changes. Never run a separate worker against PGlite's demo directory.
 

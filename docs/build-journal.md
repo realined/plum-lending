@@ -168,3 +168,6 @@ This journal records architectural checkpoints and verified results. Code being 
 **Interview talking points.** Search optimization versus authoritative eligibility; PKCE/state/session roles; schema-valid versus semantically correct model output; worker heartbeat versus job lease; privacy-preserving failure diagnosis.
 
 **Owner action.** No credentials yet. Next checkpoint is CI evidence and precise local account setup. Reference semantics: [Gmail filtering](https://developers.google.com/workspace/gmail/api/guides/filtering), [OpenAI structured output](https://developers.openai.com/api/docs/guides/structured-outputs).
+
+
+**First Linux CI result.** Run `35141432772` passed lint/types, 174 tests, production build and 9/11 end-to-end tests. Two tests used ambiguous locators: readable message text also appeared inside normalized JSON, and Next's route announcer also had `role=alert`. Scoped the message assertions to exact text and the error assertion to its message. These were test-selection defects, not evidence of a passing full suite. The PostgreSQL smoke check was not reached. Verification is being rerun.

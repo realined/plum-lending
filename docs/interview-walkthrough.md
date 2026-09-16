@@ -37,15 +37,15 @@ Status note: discuss automated proof and live proof separately. Until `live-acce
 
 ## End-to-end request flow
 
-1. The administrator writes a query. Demo uses a explicitly limited local parser; live mode sends only the query and policy instructions to OpenAI.
+1. The administrator writes a query. Demo uses an explicitly limited local parser; live mode sends only the query and policy instructions to OpenAI.
 2. The interpreter returns a constrained intent. Unsupported requests and refusals do not execute. Zod validates allowed fields and ranges; the server computes a frozen calendar window in UTC.
 3. The request/spec/assumptions/source are stored and shown for review. The administrator starts an export using the interpretation ID.
 4. The API creates a queued job, deduplicated by interpretation. It returns promptly. A worker claims the row with an expiring owner lease.
 5. The worker fetches a fresh CRM snapshot. It verifies associations and stage mappings, failing closed when absence of a won deal cannot be established.
-6. Gmail yields paginated candidate thread IDs. Every candidate thread is read in full, validated and normalized; per-thread failures become explicit gaps.
+6. Eligible CRM identities become bounded Gmail sender/date searches. No eligible contacts means no Gmail request. Gmail yields deduplicated, paginated candidate thread IDs. Every candidate thread is read in full, validated and normalized; per-thread failures become explicit gaps.
 7. The deterministic executor matches exact sender identities to contacts, verifies lender recipients and timestamps, and excludes non-Sponsors or won/unknown deal relationships. It records qualifying message IDs and all thread messages.
 8. A transaction checks ownership, upserts canonical records, writes unique contact/thread export rows, and marks the job terminal. A stale worker cannot publish after another worker, disconnect, or data deletion invalidates its ownership.
-9. The browser polls persisted state and previews 25 rows at a time. The drawer displays plain text and JSON. CSV download reads stored rows in pages, preserving multiline text and applying formula defenses.
+9. URL parameters select the view and saved run; a new draft clears the selected run. The browser polls persisted state and previews 25 rows at a time. The drawer displays plain text and JSON. CSV download reads stored rows in pages, preserving multiline text and applying formula defenses.
 
 ## Data model
 
@@ -59,7 +59,7 @@ The canonical tables preserve the latest ingested state, while export-row JSON p
 
 Authorization-code OAuth requests `gmail.readonly`, offline access and consent. State plus PKCE binds the redirect to the originating attempt; an encrypted short-lived cookie carries the verifier. The server exchanges the code and validates scope/profile. Refresh credentials are encrypted with AES-GCM. A connection generation prevents a worker from silently moving to another account during a run. Concurrent refresh accepts a fresh peer result only for the same generation.
 
-Search uses a slightly broad epoch-second window so Gmail search precision cannot accidentally exclude a boundary message. Local timestamp comparisons make the final decision. `threads.get?format=full` provides MIME trees; text body parts externalized as attachments are fetched when needed, while actual attachment files are not downloaded. Full thread means all messages the API exposes, not deleted or inaccessible content.
+Search combines eligible contacts' explicit primary/secondary addresses in batches of at most 20 terms (also bounded by query length). Gmail API alias expansion is not assumed. Search uses a slightly broad epoch-second window so Gmail search precision cannot accidentally exclude a boundary message. Local timestamp comparisons make the final decision. `threads.get?format=full` provides MIME trees; text body parts externalized as attachments are fetched when needed, while actual attachment files are not downloaded. Full thread means all messages the API exposes, not deleted or inaccessible content.
 
 History synchronization exists as a tested adapter method: added threads, deleted message IDs, next cursor, and full-resync on cursor expiry. The export pipeline does not yet continuously apply these deltas. Do not claim otherwise.
 
@@ -122,3 +122,15 @@ Live acceptance additionally proves real consent/scopes, account-specific proper
 **What would you change first for production?** Tenant isolation/SSO, managed secrets and retention, native worker operational controls, bounded streaming ingestion, and incremental reconciliation. Then larger semantic interpretation evaluations and a second provider adapter to validate the abstraction.
 
 **What is not finished?** Answer from the current build journal and live checklist. Never replace a missing real-account test with “the mocks passed.”
+
+## Interaction and readiness questions
+
+**Why put the selected run in the URL?** Refresh and Back should restore the same immutable request/results. Form text and interpreted criteria are transient draft state; mixing them with a previous export makes the screen misleading. Poll requests are aborted when the selected run/page changes, so an old response cannot overwrite the new selection.
+
+**Does a green heartbeat prove Gmail works?** No. Worker readiness means that the worker recently reached the database. A job lease controls ownership and publication. Stored connection status means credentials passed validation when connected. A completed real-data acceptance run is stronger, separate evidence.
+
+**Why narrow Gmail retrieval using CRM first?** Sponsor/deal eligibility can exclude irrelevant identities before mailbox reads. Search batches are an optimization; the deterministic executor still checks exact sender, lender recipients, UTC instants and deal rules against complete threads. A candidate can still contain unrelated participants; entire matching threads are preserved because context is part of the challenge.
+
+**What does the new test coverage prove?** OAuth tests cover session gates, PKCE/state, callback expiry/tampering, scope/refresh requirements and encrypted persistence with mocked HTTP. OpenAI SDK mocks cover complete/refused/incomplete/invalid/unsupported/transport outcomes and the query-only input boundary. They do not prove Google's consent flow, the actual HubSpot account schema, or real-model semantic accuracy. The Linux CI workflow adds real Chromium and isolated PostgreSQL with a separate worker process using injected synthetic providers. Consult the build journal for actual run results.
+
+**How are errors useful without leaking data?** Known provider status codes and the current stage map to owned recovery copy. Provider response text and arbitrary exception messages are never interpolated. Per-thread failures produce partial results; a failed candidate search prevents a misleading complete export.
