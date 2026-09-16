@@ -45,7 +45,10 @@ test("review, run, inspect full context, download and reopen history", async ({
     ),
   ).toBeVisible();
   await expect(
-    page.getByText("Juniper-property-overview.pdf", { exact: true }),
+    page
+      .getByRole("dialog")
+      .locator(".attachment")
+      .filter({ hasText: "Juniper-property-overview.pdf" }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   const downloadPromise = page.waitForEvent("download");

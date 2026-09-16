@@ -171,3 +171,5 @@ This journal records architectural checkpoints and verified results. Code being 
 
 
 **First Linux CI result.** Run `35141432772` passed lint/types, 174 tests, production build and 9/11 end-to-end tests. Two tests used ambiguous locators: readable message text also appeared inside normalized JSON, and Next's route announcer also had `role=alert`. Scoped the message assertions to exact text and the error assertion to its message. These were test-selection defects, not evidence of a passing full suite. The PostgreSQL smoke check was not reached. Verification is being rerun.
+
+**Second Linux CI result.** Run `35141899203` passed 10/11 end-to-end tests. The remaining assertion required the filename as the entire element text, but the attachment element also includes its size/metadata label. Verified the element in the supported browser and scoped the assertion to the attachment container. No application behavior changed; the complete download/history test and PostgreSQL gate are being rerun.
