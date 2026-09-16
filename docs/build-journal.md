@@ -104,3 +104,19 @@ This journal records architectural checkpoints and verified results. Code being 
 **Remaining work and owner action.** Complete GitHub CLI sign-in as `realined`. Then create the private repository, push existing history, verify its visibility and matching commit SHA, and update this checkpoint. The owner has already authorized repository creation and pushing; no second publication approval is needed.
 
 **Interview talking points.** A Git repository is portable because history lives in `.git`; lockfiles preserve dependency versions while caches are disposable; remote configuration versus a verified push; authentication versus authorization; synthetic verification versus mandatory live acceptance.
+
+## Private GitHub publication — verified 2026-09-16
+
+**Goal.** Complete the approved remote backup while preserving the existing local commit history.
+
+**Implementation and decisions.** After the owner completed GitHub CLI sign-in, verified the authenticated account was `realined`, created the private repository at https://github.com/realined/plum-lending, and pushed local `main` using the existing HTTPS `origin`. Local `main` now tracks `origin/main`. README and the checklist reflect the verified remote. Kept the local checkout at `~/Projects/plum-lending`.
+
+**Data flow and alternatives.** Reviewed source commits travel through authenticated Git to the private remote; ignored runtime files do not participate. Used an ordinary push to retain all existing commits. Rebuilding files through an API or uploading a ZIP would not preserve the same history and was unnecessary once CLI authentication was available.
+
+**Validation.** GitHub reports `isPrivate: true` and default branch `main`. The first push completed successfully, and `git ls-remote` matched local HEAD `2b41c551725e5c4877ab98cba2fb8dabf9e99e64`. The working tree was clean and the branch had its upstream set. All 83 tracked files match the reviewed manifest; private/runtime path checks and recognized credential-pattern scanning passed. No application code changed during publication; the relocation checkpoint's passing lint, type checks, 136 tests, and production build remain the latest application verification.
+
+**Security, assumptions, and limitations.** GitHub credentials were used through the authenticated CLI/Git credential mechanism without printing or committing them. Repository access remains private. Publishing source does not deploy the application, configure Gmail/HubSpot, or prove live integration. GitHub availability and account access are still external dependencies, and pattern scanning cannot detect every kind of sensitive content.
+
+**Remaining work and owner action.** No additional repository approval or action is required. Mandatory Gmail OAuth, HubSpot connection/ingestion, live CSV acceptance, and the previously blocked standalone browser suite remain on the execution plan. Live data processing still requires the owner's explicit authorization.
+
+**Interview talking points.** Local commits versus a remote backup; upstream tracking and branch SHA verification; preserving history with ordinary pushes; private repository access versus application credentials; source publication versus deployment and live acceptance.

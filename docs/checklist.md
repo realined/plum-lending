@@ -30,7 +30,7 @@
 - [x] Lint, strict types, unit/integration tests, production build
 - [x] Final offline security/regression review and source-only archive
 - [x] Initial Git commit on `main`; clean checkout, ignore rules, and repository integrity verified
-- [ ] Create/confirm private GitHub destination and push version history with owner authorization
+- [x] Create private `realined/plum-lending`, push existing history with owner authorization, and verify matching local/remote SHA with `main` tracking `origin/main`
 - [x] Move the complete checkout to the owner's `~/Projects/plum-lending`; revalidate dependencies, checks, and demo startup
 
 ## Acceptance and risks
