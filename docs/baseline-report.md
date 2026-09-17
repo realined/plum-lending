@@ -1,5 +1,7 @@
 # Verified live baseline — Plum Lending
 
+**Current expanded demo:** 20 source contacts and 59 Gmail messages; fresh live result 10 contacts / 12 rows / 45 messages in 22.869 seconds, with verified download. See [expanded acceptance](expanded-live-acceptance.md). The seven-contact results below are the original baseline history.
+
 Technical acceptance passed on September 16, 2026 Eastern (September 17 UTC), ahead of the September 17, 4 PM Eastern presentation. This report is the requested checkpoint before refinement. No further product changes, deployment or publication are implied.
 
 ## Outcome

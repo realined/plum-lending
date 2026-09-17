@@ -1,5 +1,7 @@
 # Mandatory live acceptance
 
+**Current expanded demo:** 20 source contacts and 59 Gmail messages; fresh live result 10 contacts / 12 rows / 45 messages in 22.869 seconds, with verified download. See [expanded acceptance](expanded-live-acceptance.md). The seven-contact results below are the original baseline history.
+
 **Status: TECHNICAL LIVE ACCEPTANCE PASSED on 2026-09-16 Eastern (2026-09-17 UTC). Real Gmail OAuth, HubSpot private-app access, controlled live seeding/replay, five real-model interpretation cases, reviewed browser execution, both provider ingestions, deterministic filtering, full-thread normalization and authenticated CSV download are verified. Final owner review, rehearsal and publication approval remain separate handoff steps.**
 
 The owner's explicit authorization is required before connecting or processing live data. Keep source-control evidence to counts, timestamps, boolean checks, and sanitized error categories. Never save real correspondence, identities, provider IDs, tokens, screenshots of live content, raw responses, or live CSVs in this repository.

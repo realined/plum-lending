@@ -2,7 +2,7 @@
 
 A working interview POC for turning CRM relationships and complete email conversations into an explainable contact audience and downloadable CSV.
 
-**Submission status: the complete Gmail + HubSpot + OpenAI vertical slice has passed technical live acceptance using approved fictional data in real accounts.** The browser workflow produced the exact expected 2 contacts, 2 threads and 5 messages in 7.087 seconds, with a verified eight-column CSV download. Five live interpretation cases passed. See [the measured acceptance record](docs/live-acceptance.md) and [baseline report](docs/baseline-report.md). Owner review/rehearsal and publication approval remain separate handoff steps.
+**Submission status: the complete Gmail + HubSpot + OpenAI vertical slice has passed technical live acceptance using approved fictional data in real accounts.** The expanded browser workflow produced the exact expected 10 contacts, 12 threads and 45 messages in 22.869 seconds, with a verified eight-column CSV download. The live corpus contains 20 contacts, 20 companies, 8 deals, 21 Gmail threads and 59 messages. See [expanded acceptance](docs/expanded-live-acceptance.md). Five live interpretation cases passed. See [the measured acceptance record](docs/live-acceptance.md) and [baseline report](docs/baseline-report.md). The private GitHub repository is updated; owner rehearsal and final media readiness remain separate handoff steps.
 
 ![Synthetic demo interface](docs/demo-preview.png)
 

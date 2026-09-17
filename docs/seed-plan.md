@@ -73,7 +73,7 @@ Approved plan digest: `cc1ef0ff6f9c58ae201d55f2917a9bb097b581c6c86e3c2680759ef89
 
 Apply created the exact 7/7/3 CRM and 6-thread/9-message Gmail corpus and published the private receipt. Replay returned the same journaled IDs, with no pending operation or duplicate creates. Both reader jobs yielded exactly the expected 2 rows and 5 messages. Full local verification after the compatibility change passed lint, strict types, 253 tests (including 35 seed tests), and production build. No email was sent. Cleanup is deliberately not exercised against the presentation dataset.
 
-## Approved additive demo scope — implementation verified, live expansion pending
+## Approved additive demo scope — live expansion and acceptance verified
 
 The owner approved 20 total contacts, 20 companies, 8 deals, 21 threads and 59 messages. See `expanded-seed-proposal.md`. Run `pnpm exec tsx scripts/seed-preview.ts --dry-run --expanded` without environment loading for exact records/timestamps/digest. Offline normalization/executor/CSV tests prove 10 included contacts, 12 rows, 45 full-thread messages, 10 exclusions and zero failures.
 
@@ -81,4 +81,4 @@ After owner execution approval and current writer consent, stop web and worker, 
 
 For read-only post-expansion preflight, use `seed:preflight --expanded`; cleanup or `seed:apply` on the expanded corpus require `--expanded` plus its exact digest and their own authorization. Base commands deliberately reject the expanded journal. Existing cleanup semantics remain unchanged: archive tracked CRM objects/remove the seed label and receipt while retaining synthetic Gmail messages. No cleanup is authorized by expansion.
 
-Focused seed tests: 42 passed, including unchanged base digest, original-record preservation, expanded MIME→normalization→filter→CSV truth set, multi-thread replay, unknown association rejection, wrong approval/incomplete base rejection, and uncertain-create stop. Full check: 264 tests, lint, strict types and production build pass. These expansion tests use mocked providers; live proof remains pending.
+Focused seed tests: 42 passed, including unchanged base digest, original-record preservation, expanded MIME→normalization→filter→CSV truth set, multi-thread replay, unknown association rejection, wrong approval/incomplete base rejection, and uncertain-create stop. Full check: 264 tests, lint, strict types and production build pass. These tests use mocked providers. Subsequent approved live expansion, replay and browser/CSV proof passed; see `expanded-live-acceptance.md`.

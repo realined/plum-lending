@@ -142,8 +142,8 @@ Subsequent owner instructions authorize pushing the latest work, correctness rev
 - [x] Restart web and separate worker with the verified fix
 - [x] Prepare additive 20-contact / 59-message proposal preserving existing records
 - [x] Owner confirms 20-contact expanded demo scope
-- [ ] Complete expanded live preflight and reviewed write approval
+- [x] Complete expanded live preflight and explicit reviewed write approval
 - [x] Implement and verify additive seeding/multiple-thread support: 42 seed tests; full 264 tests/lint/types/build pass
-- [ ] Renew separate writer consent if expired; run approved expansion and duplicate-free replay
-- [ ] Verify real expanded ingestion and exact 10-contact / 12-row / 45-message result
+- [x] Renew separate writer consent; real expansion/replay passed, original IDs preserved, Gmail confirms 59 messages/21 threads
+- [x] Verify real expanded OpenAI/browser ingestion and exact 10-contact / 12-row / 45-message result; downloaded CSV matches stored bytes; 22.869-second run
 - [ ] Final readiness review, rehearsal, then overview script/video/ElevenLabs narration

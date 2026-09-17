@@ -120,3 +120,4 @@ tsconfig.json
 vitest.config.ts
 docs/expanded-seed-proposal.md
 docs/expanded-seed-dry-run.md
+docs/expanded-live-acceptance.md

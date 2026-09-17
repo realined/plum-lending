@@ -33,9 +33,9 @@ Only the administrator's request is sent to OpenAI. Provider records and email b
 | Natural-language segmentation | OpenAI Responses structured output → validated intent → frozen SegmentSpec | Five live semantic cases plus the browser's representative request pass |
 | Admin interface | Connections, visible interpretation, Run, background status, counts, history, results | Supported-browser live journey verified; GitHub Chromium suite passes |
 | Complete conversation normalization | Sender, recipients, timestamps, direction, body, attachment metadata and ordered full thread | Four-message Cedar thread retains recent context outside the matching window; JSON and CSV verified |
-| Immediately accessible structured output | Result table and streamed downloadable CSV | Eight compatible headers, two live rows, populated subject/body and parsable full JSON |
+| Immediately accessible structured output | Result table and streamed downloadable CSV | Eight compatible headers, twelve expanded live rows, populated subject/body and parsable full JSON |
 | One thread per row allowed | One contact/thread pair per row | Matches the original brief's permitted format variation |
-| Runtime in minutes, hours maximum | Separate worker completes asynchronously | 7.087 seconds for the small live corpus; not a large-mailbox performance claim |
+| Runtime in minutes, hours maximum | Separate worker completes asynchronously | 22.869 seconds for the expanded live corpus; not a large-mailbox performance claim |
 | Real-data POC with own email + free HubSpot | Approved fictional records stored in actual services | Real Gmail/HubSpot API reads, not mock providers, drive the live demonstration |
 | Expansion to actual Plum stack | Provider interfaces and production notes | Salesforce/Outlook not implemented; this is documented next-stage work |
 
@@ -43,7 +43,7 @@ The owner's additional engineering requirements are represented by strict TypeSc
 
 ## Where the seeded Gmail messages are
 
-The Gmail connector independently confirmed the approved mailbox contains **9 messages in 6 threads** under **`bentech-lending-poc-v1`**, with **0 messages in Inbox**. Search this in the approved lab account:
+The Gmail connector independently confirmed the approved mailbox contains **59 messages in 21 threads** under **`bentech-lending-poc-v1`**, with **0 messages in Inbox**. Search this in the approved lab account:
 
 ```
 in:anywhere label:bentech-lending-poc-v1

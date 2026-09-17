@@ -1,6 +1,6 @@
 # Additive synthetic lending dataset proposal
 
-**Owner approved this 20-contact scope. Implementation and offline validation pass; expanded live writes remain pending.** Preserve every existing record and provider ID in the current seven-contact dataset. Expand it with fictional lending conversations that make filtering, context retention, and one-contact/multiple-thread behavior easy to demonstrate. The existing protected mailbox boundary remains mandatory.
+**Owner approved this 20-contact scope. Implementation, offline validation, approved live writes/replay and expanded browser/CSV acceptance pass. See `expanded-live-acceptance.md`.** Preserve every existing record and provider ID in the current seven-contact dataset. Expand it with fictional lending conversations that make filtering, context retention, and one-contact/multiple-thread behavior easy to demonstrate. The existing protected mailbox boundary remains mandatory.
 
 ## Counts and acceptance contract
 
