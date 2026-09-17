@@ -1,6 +1,8 @@
 import { config } from "../src/server/config";
+import { gmailAccessConfig } from "../src/server/gmail-access";
 try {
   const c = config();
+  if (c.mode === "live") gmailAccessConfig();
   const fields =
     c.mode === "live"
       ? [
@@ -11,6 +13,7 @@ try {
           "GOOGLE_CLIENT_ID",
           "GOOGLE_CLIENT_SECRET",
           "GOOGLE_REDIRECT_URI",
+          "GMAIL_EXPECTED_MAILBOX",
           "OPENAI_API_KEY",
         ]
       : [];

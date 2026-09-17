@@ -1,15 +1,17 @@
+import Image from "next/image";
+
 export function Brand() {
   return (
     <div className="brand">
-      <svg viewBox="0 0 32 36" width="29" height="32" aria-hidden="true">
-        <path
-          d="M16 9C4-1-4 16 8 29c6 7 10 7 16 0C36 16 28-1 16 9Z"
-          fill="currentColor"
-        />
-        <path d="M17 8c0-6 5-8 10-7-1 5-4 8-10 7" fill="#bdb899" />
-      </svg>
-      <span>
-        plum<span className="brand-dot">.</span>
+      <Image
+        className="brand-logo"
+        src="/brand/plum-official.png"
+        alt="Plum Infinity logo"
+        width={48}
+        height={48}
+      />
+      <span className="brand-name">
+        PLUM<small>LENDING</small>
       </span>
     </div>
   );

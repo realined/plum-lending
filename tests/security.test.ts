@@ -70,6 +70,8 @@ function validLiveConfig() {
   vi.stubEnv("SESSION_SECRET", randomBytes(32).toString("base64url"));
   vi.stubEnv("TOKEN_ENCRYPTION_KEY", randomBytes(32).toString("base64"));
   vi.stubEnv("EMBEDDED_WORKER", "");
+  vi.stubEnv("GMAIL_EXPECTED_MAILBOX", "lender@example.test");
+  vi.stubEnv("GMAIL_DATA_SCOPE", "seed-only");
 }
 function flipEncodedByte(value: string) {
   const bytes = Buffer.from(value, "base64url");
@@ -413,6 +415,8 @@ describe("connection ownership and token refresh fencing", () => {
     expect(await googleAccessToken()).toBe("winning-synthetic-access");
   });
   it("fences a captured Gmail provider after reconnecting to a different mailbox", async () => {
+    vi.stubEnv("GMAIL_DATA_SCOPE", "mailbox");
+    vi.stubEnv("GMAIL_EXPECTED_MAILBOX", "first@example.test");
     await saveConnection("gmail", storedToken(), "first@example.test");
     await saveConnection("hubspot", "synthetic-hubspot-token");
     const providers = await liveProviders();
@@ -473,6 +477,7 @@ describe("Gmail OAuth start and callback using synthetic responses", () => {
     const { location, cookie, saved } = begin();
     expect(location.origin).toBe("https://accounts.google.com");
     expect(location.searchParams.get("scope")).toBe(scope);
+    expect(location.searchParams.get("login_hint")).toBe("lender@example.test");
     expect(location.searchParams.get("access_type")).toBe("offline");
     expect(location.searchParams.get("code_challenge_method")).toBe("S256");
     expect(location.searchParams.get("state")).toBe(saved.state);
@@ -551,7 +556,7 @@ describe("Gmail OAuth start and callback using synthetic responses", () => {
       expect(await database.query("SELECT id FROM connections")).toEqual([]);
     },
   );
-  it.each(["refresh", "scope", "profile", "token"])(
+  it.each(["refresh", "scope", "profile", "token", "wrong-mailbox"])(
     "does not save a connection when %s validation fails",
     async (kind) => {
       const { cookie, saved } = begin();
@@ -574,17 +579,31 @@ describe("Gmail OAuth start and callback using synthetic responses", () => {
         fetchMock.mockResolvedValueOnce(
           jsonResponse({ emailAddress: "invalid", historyId: "123" }),
         );
+      if (kind === "wrong-mailbox")
+        fetchMock.mockResolvedValueOnce(
+          jsonResponse({
+            emailAddress: "unapproved@example.test",
+            historyId: "123",
+          }),
+        );
       const response = await finishOAuth(callback(cookie.value, saved.state));
       expect(response.headers.get("location")).toBe(
         `${appUrl}/?connection=oauth-failed`,
       );
       expect(await database.query("SELECT id FROM connections")).toEqual([]);
-      expect(fetchMock).toHaveBeenCalledTimes(kind === "profile" ? 2 : 1);
+      expect(fetchMock).toHaveBeenCalledTimes(
+        ["profile", "wrong-mailbox"].includes(kind) ? 2 : 1,
+      );
     },
   );
   it("rejects a callback path mismatch before generating authorization", () => {
     vi.stubEnv("GOOGLE_REDIRECT_URI", `${appUrl}/wrong-path`);
     expect(() => startOAuth()).toThrow("must match");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("requires an explicit mailbox identity before starting OAuth", () => {
+    vi.stubEnv("GMAIL_EXPECTED_MAILBOX", "");
+    expect(() => startOAuth()).toThrow("SEED_DATA_BOUNDARY");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

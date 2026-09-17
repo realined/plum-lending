@@ -30,3 +30,9 @@ The queue and adapters have bounded API retries but no global job time budget or
 ## Review outcomes
 
 An independent review identified and prompted fixes for demo/live database crossover, account replacement during ingestion, concurrent refresh races, incomplete HubSpot permission validation, and accepting non-PostgreSQL live configuration. Regression tests cover these. The review is a useful engineering check, not a claim of a completed penetration test or compliance certification.
+
+## Mixed-use Gmail account: test-only validation
+
+The approved interview mailbox has unrelated correspondence. Gmail OAuth remains mailbox-wide, while the default application scope is `seed-only`. Require an explicit expected account and private seeder insertion receipt. Restrict candidate search to the seed label with ID-only responses, require exact message membership, and fetch approved message IDs individually to avoid a mixed-thread race. A privacy-boundary error aborts the complete export and publishes no records; it is not a partial-success case. No real correspondence is part of the seed manifest or model input.
+
+The configuration/manifest are trusted local inputs, not an OAuth security sandbox. `mailbox` is an explicit operator opt-out for separately authorized accounts and must never be used for the owner's mixed-use interview mailbox. Prior stored exports are not retrospectively scrubbed; no live data has yet entered this project. See `mailbox-isolation.md` for tests, limitations and remaining live verification.

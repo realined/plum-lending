@@ -9,7 +9,7 @@
 - Check changes with `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`. Use `pnpm test:e2e` for admin-flow changes.
 - Update `docs/checklist.md` and document material assumptions or tradeoffs.
 - Bounded independent test expansion and security review may use subagents; main architecture and integration decisions remain in the primary agent.
-- Do not deploy, email contacts, or mutate provider records. All integrations are read-only.
+- Normal application integrations remain read-only; never send email or deploy. The owner explicitly requested a separate controlled synthetic-data seeder for dedicated test accounts. Implement its safety checks/dry-run separately, and wait for approval of records, scopes and cleanup before any provider writes. Owner-approved exception: the selected existing job-search/BenTech mailbox may be used only with seed-only access; unrelated correspondence and all other personal mailboxes remain excluded. See docs/mailbox-isolation.md.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

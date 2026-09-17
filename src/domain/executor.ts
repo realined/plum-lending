@@ -9,6 +9,7 @@ import {
   type Thread,
 } from "./models";
 import { normalizeEmail } from "./identity";
+import { DataBoundaryError } from "./data-boundary";
 export async function executeSegment(
   spec: SegmentSpec,
   crm: CRMSnapshot,
@@ -88,7 +89,8 @@ export async function executeSegment(
           ...new Map(t.messages.map((m) => [m.providerMessageId, m])).values(),
         ],
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof DataBoundaryError) throw error;
       result.failures.push({
         scope: "thread",
         code: "THREAD_UNAVAILABLE",

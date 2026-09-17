@@ -66,8 +66,9 @@ export function SetupPanel({ status }: { status: Status }) {
             <strong>HubSpot property and private app</strong>
             <p>
               Confirm the contact property {status.sponsorProperty} and internal
-              value {status.sponsorValue}. Enter the read-only token in the
-              masked connection form after starting live mode.
+              value {status.sponsorValue}. Configure the read-only token
+              privately using the local setup guide, then verify access before
+              creating test records.
             </p>
           </div>
           <span>
@@ -98,9 +99,11 @@ export function SetupPanel({ status }: { status: Status }) {
         </p>
       </details>
       <p className="setup-boundary">
-        Before the live run, identify a few known historical correspondents and
-        expected inclusion/exclusion cases. The representative query excludes
-        the most recent three months. Live acceptance is still required.
+        Before the live run, approve the fictional dataset and its expected
+        results. Test-only access requires message IDs recorded by the seeder;
+        unrelated correspondence must never be added. The representative query
+        excludes the most recent three months. Live acceptance is still
+        required.
       </p>
     </section>
   );

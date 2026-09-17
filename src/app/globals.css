@@ -112,15 +112,21 @@ small {
   color: #fff;
   padding: 0 14px;
 }
-.brand > span {
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: 43px;
-  letter-spacing: -2px;
+.brand-logo {
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.brand-name {
+  font-weight: 600;
+  font-size: 25px;
+  letter-spacing: 2px;
   line-height: 1;
 }
-.brand-dot {
-  color: #bdb899;
+.brand-name small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 3px;
+  margin-top: 6px;
 }
 .workspace-switch {
   display: flex;

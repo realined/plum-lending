@@ -1,30 +1,24 @@
 # Mandatory live acceptance
 
-**Status: NOT RUN. No live Gmail, HubSpot, or OpenAI account has been connected or processed. The submission is not complete until this checklist passes.**
+**Status: LIVE CONNECTIONS VERIFIED; FULL ACCEPTANCE NOT RUN. Actual Gmail OAuth, HubSpot read validation, encrypted connections, local PostgreSQL and a separate worker are verified. Live dataset ingestion, associations, interpretation and CSV output remain pending. OpenAI is not configured. The submission is not complete until the remaining gates pass.**
 
 The owner's explicit authorization is required before connecting or processing live data. Keep source-control evidence to counts, timestamps, boolean checks, and sanitized error categories. Never save real correspondence, identities, provider IDs, tokens, screenshots of live content, raw responses, or live CSVs in this repository.
 
-## Prepare a small, independently checkable truth set
+## Prepare the approved fictional truth set in real services
 
-The owner identifies existing Gmail correspondents with messages between the interpreted start and cutoff. In the owner's free HubSpot account, the owner can manually create/confirm matching contacts and company associations. Use the actual sender email address; do not grant the agent implicit permission to create records or send emails.
+Use the selected job-search/BenTech Gmail account only in `seed-only` mode and a new free HubSpot instance. Do not use existing correspondents or unrelated real messages. The seeder must first pass its enable/account/namespace/idempotency guards, produce a dry-run and cleanup preview, and receive owner approval. Its actual insertion receipt is required before any live export can run. See [mailbox isolation](mailbox-isolation.md).
 
-Prepare at least these known cases, where available:
+Include seven cases: qualifying Sponsor/no won (include); qualifying Sponsor/won (exclude); recent-only activity (exclude); older than two years (exclude); non-Sponsor (exclude); qualifying Sponsor/Closed Lost (include); Sponsor/no email (exclude). Preserve an approved four-message thread, including historical dates, valid reply headers, plain/HTML content, CC and attachment metadata.
 
-- Sponsor with a historical inbound message in the requested window, no directly associated Closed Won deal: include.
-- Sponsor with an in-window inbound message and a directly associated Closed Won deal: exclude.
-- Non-Sponsor with an in-window message: exclude.
-- Sponsor whose only messages are outbound or outside the window: exclude.
-- An included thread with lender replies and context outside the window: preserve all accessible messages.
-
-The representative request excludes the most recent three months, so a newly sent test email cannot qualify. Use existing history for that gate. A separately reviewed request with zero recent months can exercise newly exchanged test data, but does not replace proof of the representative window. Do not alter dates or pass demo records off as live.
+Controlled historical dates must be explicitly inserted into the real Gmail service by the approved seeder; they are fictional test data, never claimed to be organic historical correspondence. The app must then read those actual live records. Mocks remain separate. Do not substitute a zero-month window for the representative 24-month-minus-3-month request.
 
 ## Execute, with explicit owner permission
 
 1. Start PostgreSQL, the web app in live mode, and the separate worker using `live-setup.md`.
 2. Sign in with the local administrator password. The app must visibly say **Live data**.
 3. Click **Connect** on Gmail. The owner completes Google sign-in and consent. Verify connected status; do not capture the mailbox identity in an artifact.
-4. Paste the private-app token into the local masked HubSpot connection form. Verify connected status. This validates all required read endpoints and property mapping.
-5. Confirm a recent worker heartbeat in Connections. Enter the representative query and select **Interpret request**. Confirm Sponsor mapping, inbound direction, frozen UTC timestamps, direct associations, and the Closed Won policy.
+4. Verify HubSpot using the supported local environment-token path. Read-only authentication/property checks must already have passed before seed records were created; environment presence alone is not proof. The masked UI form is an alternative only if the owner chooses it.
+5. Confirm Gmail data scope is test-only, the private insertion receipt matches the approved mailbox, and a recent worker heartbeat in Connections. Enter the representative query and select **Interpret request**. Confirm Sponsor mapping, inbound direction, frozen UTC timestamps, direct associations, and the Closed Won policy.
 6. On the owner's approval of these reviewed criteria, click **Run segment**. Observe completion and counts. A partial job is not sufficient to claim complete acceptance.
 7. Compare included/excluded cases to the truth set directly in the accounts/UI. Inspect at least one full thread and its normalized JSON locally. Check sender, recipients, timestamps, ordering, bodies, subject, and attachment metadata.
 8. Download the live CSV to an owner-controlled private location **outside the repository**. Verify all eight headers, one contact/thread per row, populated subject/body, and parsable JSON. Do not open a live CSV with formula execution enabled; output values already include formula protection.
@@ -53,13 +47,14 @@ Record total CRM contacts scanned, matched contacts/threads/messages, CSV row co
 
 | Gate | Result |
 | --- | --- |
-| Owner authorization | Pending |
-| Date/time of test | Pending |
-| Native PostgreSQL migration / worker | CI infrastructure check passed with synthetic providers; owner local/live run pending |
-| Live Gmail OAuth | Pending |
-| Live HubSpot validation | Pending |
-| Live OpenAI interpretation and semantic cases | Pending |
+| Owner authorization | Approved account selected for synthetic-only use; owner completed read-only OAuth consent. Reviewed seed-write approval remains pending |
+| Date/time of test | 2026-09-16: connection/infrastructure checks only; full live dataset run pending |
+| Native PostgreSQL migration / worker | Owner Docker PostgreSQL 17.11 healthy on loopback; migrations 1/2 applied; separate live worker heartbeat and authenticated web UI verified |
+| Live Gmail OAuth | Passed: actual owner consent/callback, approved profile equality, encrypted token and Connected UI; no message ingestion |
+| Live HubSpot validation | Passed: five real read checks, encrypted application connection and Connected UI. API portal identity and associations pending |
+| Live OpenAI interpretation and semantic cases | Blocked by missing API key and unresolved no-charges constraint; no paid call made |
 | Ingestion from both services | Pending |
+| Only approved synthetic message IDs requested and persisted | Offline tests pass; live proof pending |
 | Independent eligibility comparison | Pending |
 | Full-thread preservation | Pending |
 | Correct live CSV download | Pending |

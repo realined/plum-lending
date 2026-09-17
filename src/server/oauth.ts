@@ -7,6 +7,7 @@ import { HttpError, constantEqual, cookieOptions } from "./auth";
 import { fetchJson } from "@/providers/http";
 import { GmailProvider } from "@/providers/gmail";
 import { googleResponseSchema, saveConnection } from "./connections";
+import { assertExpectedMailbox, gmailAccessConfig } from "./gmail-access";
 const SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
 function oauthConfig() {
   const clientId = process.env.GOOGLE_CLIENT_ID,
@@ -25,6 +26,8 @@ function oauthConfig() {
   return { clientId, clientSecret, redirect };
 }
 export function startOAuth() {
+  // Mailbox selection must be explicit, even before the seed receipt exists.
+  const access = gmailAccessConfig();
   const c = oauthConfig(),
     state = randomBytes(32).toString("base64url"),
     verifier = randomBytes(48).toString("base64url");
@@ -35,6 +38,7 @@ export function startOAuth() {
     scope: SCOPE,
     access_type: "offline",
     prompt: "consent",
+    login_hint: access.mailbox,
     state,
     code_challenge: createHash("sha256").update(verifier).digest("base64url"),
     code_challenge_method: "S256",
@@ -101,6 +105,7 @@ export async function finishOAuth(req: NextRequest) {
       return finish("oauth-failed");
     const provider = new GmailProvider(async () => token.access_token, []);
     const profile = await provider.validateConnection();
+    assertExpectedMailbox(profile.mailbox);
     await saveConnection(
       "gmail",
       JSON.stringify({

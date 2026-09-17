@@ -6,6 +6,7 @@ import { GmailProvider } from "@/providers/gmail";
 import { HubSpotProvider } from "@/providers/hubspot";
 import { fetchJson } from "@/providers/http";
 import { uniqueEmails } from "@/domain/identity";
+import { assertExpectedMailbox, loadGmailSeedPolicy } from "./gmail-access";
 const tokenSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
@@ -94,6 +95,8 @@ export async function connectHubSpot(token: string) {
   await saveConnection("hubspot", token);
 }
 export async function liveProviders() {
+  // Fail before any provider access when the protected dataset receipt is absent/invalid.
+  const seedPolicy = await loadGmailSeedPolicy();
   const d = await db();
   let rows = await d.query<{
     id: string;
@@ -115,6 +118,7 @@ export async function liveProviders() {
   const gmail = rows.find((r) => r.id === "gmail"),
     hubspot = rows.find((r) => r.id === "hubspot");
   if (!gmail?.mailbox || !hubspot) throw new Error("CONNECT_PROVIDERS_FIRST");
+  assertExpectedMailbox(gmail.mailbox);
   const lenders = uniqueEmails([
     gmail.mailbox,
     ...(process.env.LENDER_ALIASES ?? "").split(",").filter(Boolean),
@@ -123,6 +127,7 @@ export async function liveProviders() {
     email: new GmailProvider(
       () => googleAccessToken(gmail.generation),
       lenders,
+      seedPolicy,
     ),
     crm: new HubSpotProvider(
       decryptToken(hubspot.encrypted_token),

@@ -142,6 +142,7 @@ test("setup status contains configuration flags rather than secret values", asyn
     "database",
     "security",
     "google",
+    "gmail-data",
     "openai",
   ]);
   for (const check of status.setup) {

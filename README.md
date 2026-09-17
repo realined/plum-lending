@@ -2,7 +2,7 @@
 
 A working interview POC for turning CRM relationships and complete email conversations into an explainable contact audience and downloadable CSV.
 
-**Submission status: offline implementation, Linux browser tests and native PostgreSQL process checks verified; mandatory real-account acceptance remains pending.** Demo mode and mocked provider tests are development aids. The integration is not considered complete until the user's own Gmail and free HubSpot account have passed the live checklist in [docs/live-acceptance.md](docs/live-acceptance.md).
+**Submission status: real Gmail OAuth, HubSpot connection and local PostgreSQL/worker are verified; mandatory live ingestion and CSV acceptance remain pending.** Demo mode and mocked provider tests are development aids. The integration is not considered complete until the approved Gmail account (synthetic messages only) and a new free HubSpot instance have passed the live checklist in [docs/live-acceptance.md](docs/live-acceptance.md).
 
 ![Synthetic demo interface](docs/demo-preview.png)
 
@@ -12,13 +12,13 @@ Requirements: Node.js 22 LTS or newer, pnpm 11.19+ (lockfile included).
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm build
-pnpm start
+APP_MODE=demo pnpm build
+APP_MODE=demo pnpm start
 ```
 
 Open **http://localhost:3000**. No `.env`, Docker, OpenAI key, Gmail account, or HubSpot account is needed. The embedded worker runs in the same long-lived process; PGlite stores its PostgreSQL data in `.data/demo`. Demo deliberately ignores `DATABASE_URL` to prevent exposing live records. Run only one demo server per data directory.
 
-For editing: `pnpm dev`. If your machine has a restrictive file-watcher limit, use the build/start commands above or `WATCHPACK_POLLING=true pnpm dev`.
+For editing: `APP_MODE=demo pnpm dev`. Explicit demo mode also keeps the demo available after a live `.env` has been prepared. If your machine has a restrictive file-watcher limit, use the build/start commands above or `WATCHPACK_POLLING=true pnpm dev`.
 
 1. Click **Interpret request** and review the exact criteria.
 2. Click **Run segment**.
@@ -30,7 +30,7 @@ The demo clock is fixed at September 16, 2026, 12:00 UTC. Its local parser accep
 
 ## Connect real accounts — required before final submission
 
-Follow [the precise live setup guide](docs/live-setup.md). Live mode requires ordinary PostgreSQL, server-side Google OAuth credentials, an OpenAI API key, a HubSpot private-app token, and administrator security settings. OAuth consent and all live processing require the owner's authorization. Do not paste credentials into chat.
+Feature development is paused for the dedicated live-environment baseline (apart from the requested logo and required mailbox privacy safeguards). Begin with [the Phase 0 inspection and exact checklist](docs/phase-0-setup-checklist.md), then follow [the precise live setup guide](docs/live-setup.md). The owner has approved one existing job-search/BenTech Gmail account, conditional on [test-data-only isolation](docs/mailbox-isolation.md). All unrelated correspondence and other personal accounts remain excluded. Account security/consent steps are owner-operated; dataset writes require a reviewed seeder dry-run and explicit approval. No paid subscriptions, charges, deployment or publication are authorized in this phase. Live mode requires ordinary PostgreSQL, server-side Google OAuth credentials, an OpenAI API key, a HubSpot private-app token, and administrator security settings. OAuth consent and all live processing require the owner's authorization. Do not paste credentials into chat.
 
 ```sh
 pnpm setup:live
@@ -38,12 +38,16 @@ pnpm setup:live
 # Start Docker Desktop first, then:
 docker compose up -d postgres
 pnpm config:check
+# After owner approval and HubSpot token/property setup:
+pnpm hubspot:check
 pnpm db:migrate
 pnpm build
 pnpm start
 # In a second terminal:
 pnpm worker
 ```
+
+Current owner-local checkpoint: the dedicated Google Cloud project exists and Gmail API is enabled. A private `.env` has been generated; both provider credentials are populated privately. Docker PostgreSQL 17.11 is healthy, migrations 1 and 2 are applied, and the live web app and separate worker are running. OAuth registration is in Testing mode with one approved test user and Gmail read-only scope; The actual Gmail consent/callback passed, its profile matches the approved account, and the encrypted connection is saved. Free HubSpot onboarding and the `contact_type` schema are complete. The owner created the read-only private app and saved its token; the live adapter check passed for contacts, Sponsor property, companies, deals and pipelines. The existing connection function also validated and encrypted the HubSpot token into PostgreSQL; the live UI shows Connected. CRM account identity, associations, ingestion and seed writes remain unverified. `pnpm seed:preview` prints a deterministic offline proposal. The separate OAuth helper, guarded provider writer, durable replay journal and narrow cleanup are implemented and tested offline; writer credentials, live preflight and writes remain pending. Review [the seed plan](docs/seed-plan.md). `config:check` still reports missing `OPENAI_API_KEY`; no model spending is authorized. See the [build journal](docs/build-journal.md).
 
 `setup:live` refuses to overwrite an existing `.env`. Read [live-acceptance.md](docs/live-acceptance.md) before connecting or running. No provider records are modified and no emails are sent by this application.
 
@@ -102,7 +106,7 @@ pnpm sample            # regenerates synthetic CSV and expected counts
 python3 scripts/package-source.py
 ```
 
-Verified locally and in [Linux CI](https://github.com/realined/plum-lending/actions/runs/35142338893): **174 Vitest tests, lint, strict types and production build pass**. CI also passed **11 end-to-end tests (7 browser + 4 API)** and a native PostgreSQL 17 check with concurrent migrations, separate web/worker processes, authentication and full-thread CSV output. The native worker uses explicitly injected synthetic providers; this is infrastructure proof, not live Gmail/HubSpot acceptance. The Mac sandbox still blocks standalone Chromium, but supported-browser desktop/mobile checks and Linux Chromium both passed. The previous production dependency audit reported no known vulnerabilities.
+Latest local verification: **253 Vitest tests, lint, strict types and production build pass**. The preceding mailbox-isolation checkpoint also passed 4 API tests; those were not rerun for the separate CLI seeder. Earlier [Linux CI](https://github.com/realined/plum-lending/actions/runs/35142338893), before mailbox isolation, passed 174 tests and **11 end-to-end tests (7 browser + 4 API)** plus a native PostgreSQL 17 check with concurrent migrations, separate web/worker processes, authentication and full-thread CSV output. The native worker uses explicitly injected synthetic providers; this is infrastructure proof, not live Gmail/HubSpot acceptance. The Mac sandbox still blocks standalone Chromium, but supported-browser desktop/mobile checks and Linux Chromium both passed. The previous production dependency audit reported no known vulnerabilities.
 
 Run `pnpm build` before browser tests. Tests never call real providers. PGlite integration tests exercise real PostgreSQL SQL semantics; native PostgreSQL connectivity and provider consent remain part of mandatory live validation. The source-only archive is a development handoff, not a completed live submission. A generated source manifest limits archive contents; do not zip the entire directory.
 

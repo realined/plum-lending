@@ -18,10 +18,17 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "setup:live": "tsx scripts/prepare-live.ts",
     "config:check": "tsx --env-file=.env scripts/check-config.ts",
+    "hubspot:check": "tsx --env-file=.env scripts/check-hubspot.ts",
     "format": "prettier --write src tests e2e scripts *.ts *.mjs",
     "package:source": "python3 scripts/package-source.py",
     "test:api": "playwright test e2e/api.spec.ts",
-    "test:postgres": "tsx scripts/verify-postgres.ts"
+    "test:postgres": "tsx scripts/verify-postgres.ts",
+    "seed:preview": "tsx scripts/seed-preview.ts --dry-run",
+    "seed:setup": "tsx --env-file=.env src/seed/cli.ts setup",
+    "seed:auth": "tsx --env-file=.env --env-file=.env.seed src/seed/cli.ts auth",
+    "seed:preflight": "tsx --env-file=.env --env-file=.env.seed src/seed/cli.ts preflight",
+    "seed:apply": "tsx --env-file=.env --env-file=.env.seed src/seed/cli.ts apply",
+    "seed:cleanup": "tsx --env-file=.env --env-file=.env.seed src/seed/cli.ts cleanup"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",

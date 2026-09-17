@@ -1,3 +1,5 @@
+import { gmailAccessConfig } from "./gmail-access";
+
 export type SetupCheck = {
   id: string;
   label: string;
@@ -8,6 +10,12 @@ export type SetupCheck = {
 // Local configuration shape only. This function never reads provider data or returns values.
 export function setupChecks(): SetupCheck[] {
   const e = process.env;
+  let gmailScope: "seed-only" | "mailbox" | undefined;
+  try {
+    gmailScope = gmailAccessConfig().scope;
+  } catch {
+    /* Configuration only; do not read the manifest or provider data here. */
+  }
   let redirectMatches = false;
   try {
     redirectMatches =
@@ -42,6 +50,15 @@ export function setupChecks(): SetupCheck[] {
       ),
       detail:
         "Register the Gmail callback URL, add yourself as a test user, and configure the client credentials locally.",
+    },
+    {
+      id: "gmail-data",
+      label: "Gmail data scope",
+      configured: Boolean(gmailScope),
+      detail:
+        gmailScope === "mailbox"
+          ? "Mailbox scope is selected: this can retrieve real correspondence. Do not use it for the interview account."
+          : "Test-data-only scope: an approved mailbox and seeder receipt are required. The receipt is validated before each run; real messages must never be added to it.",
     },
     {
       id: "openai",

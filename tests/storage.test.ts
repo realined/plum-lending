@@ -30,6 +30,7 @@ import {
   purgeLocalData,
 } from "@/server/repository";
 import { workOnce } from "@/server/worker";
+import { DataBoundaryError } from "@/domain/data-boundary";
 
 const spec = parseDemo(DEFAULT_QUERY);
 let database: Database;
@@ -114,6 +115,28 @@ afterAll(async () => {
 });
 
 describe("durable demo worker execution", () => {
+  it("aborts all publication when a later thread crosses the data boundary", async () => {
+    const id = await queue();
+    const email = new DemoEmail();
+    const original = email.getThread.bind(email);
+    let fetched = 0;
+    vi.spyOn(email, "getThread").mockImplementation(async (threadId) => {
+      if (++fetched === 2) throw new DataBoundaryError();
+      return original(threadId);
+    });
+    await workOnce(database, async () => ({
+      email,
+      crm: new DemoCRM(),
+      lenders: [DEMO_LENDER],
+    }));
+    expect(fetched).toBe(2);
+    expect(await getJob(id, database)).toMatchObject({
+      status: "failed",
+      error: expect.stringContaining("Test-data safety check failed"),
+    });
+    expect(await getRows(id, 100, 0, database)).toEqual([]);
+    expect(await entityCounts()).toEqual(noEntities);
+  });
   it("persists a complete export with matching counts, canonical entities, and full thread context", async () => {
     const id = await queue();
     expect(await workOnce(database)).toBe(true);

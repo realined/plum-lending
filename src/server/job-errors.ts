@@ -1,8 +1,11 @@
 import { ProviderError } from "@/providers/http";
+import { DataBoundaryError } from "@/domain/data-boundary";
 export type RunStage = "connections" | "hubspot" | "gmail" | "storage";
 
 // All output is owned copy. Never interpolate provider bodies, error messages, or identities.
 export function safeRunError(error: unknown, stage: RunStage): string {
+  if (error instanceof DataBoundaryError)
+    return "Test-data safety check failed. Verify the approved mailbox and seed manifest locally. No export was published.";
   const source =
     stage === "hubspot"
       ? "HubSpot"
