@@ -146,7 +146,7 @@ export function Workspace() {
   const deleteData = () => {
     if (
       !window.confirm(
-        "Permanently delete local workspace data and all exports?",
+        "Delete saved runs, imported records, and stored exports from this app’s database? Gmail messages, HubSpot records, connections, and downloaded CSV files will remain.",
       )
     )
       return;

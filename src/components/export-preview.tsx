@@ -32,8 +32,8 @@ export function ExportPreview({
             <span>{data.totalRows} rows</span>
           </div>
           <p>
-            One contact per conversation. Click a row to inspect the full
-            thread.
+            One row per contact and email thread. A contact with multiple
+            threads appears more than once. Click a row to read the full conversation.
           </p>
         </div>
         <a className="primary download" href={`/api/jobs/${data.job.id}/csv`}>

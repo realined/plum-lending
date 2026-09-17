@@ -14,7 +14,7 @@ export function SetupPanel({ status }: { status: Status }) {
         </div>
         <a
           className="secondary"
-          href="https://github.com/realined/plum-lending/blob/main/docs/live-setup.md"
+          href="/setup-guide"
           target="_blank"
           rel="noreferrer"
         >

@@ -147,3 +147,24 @@ Subsequent owner instructions authorize pushing the latest work, correctness rev
 - [x] Renew separate writer consent; real expansion/replay passed, original IDs preserved, Gmail confirms 59 messages/21 threads
 - [x] Verify real expanded OpenAI/browser ingestion and exact 10-contact / 12-row / 45-message result; downloaded CSV matches stored bytes; 22.869-second run
 - [ ] Final readiness review, rehearsal, then overview script/video/ElevenLabs narration
+
+
+## Presentation production — owner authorized after expanded acceptance
+
+- [x] Owner elects to freeze implementation and proceed with presentation; previous video hold superseded
+- [x] Ground authored narrative in technical interview priorities, excluding coaching blocks and private personal details
+- [x] Prepare ten-chapter script, live runbook, technical Q&A and eighteen-visual offline walkthrough
+- [x] Review composition contact sheet and verify browser navigation controls
+- [x] Generate existing-credit ElevenLabs stock narration from non-sensitive authored script
+- [x] Package 24-file rehearsal bundle excluding raw captures, transcript, secrets and private CSV
+- [x] Receive generated MP3 download (owner supplied file)
+- [x] Assemble narrated MP4; verify duration, speech-aligned transitions, full decode and masked visuals; in-app preview crashed, use local playback
+- [x] Package final narrated MP4 and complete rehearsal materials
+- [ ] Owner playback and live rehearsal
+
+
+## Setup-link and explanatory copy correction
+- [x] Replace private GitHub setup link with locally served /setup-guide; browser verified
+- [x] Clarify database-only deletion, retained connections/source records/downloads, and contact–thread preview cardinality
+- [x] Lint/types/264 tests/build and four API checks pass; no live deletion performed
+- [ ] Repeat seven browser automation checks when local Playwright Chromium is available; current attempt blocked before launch

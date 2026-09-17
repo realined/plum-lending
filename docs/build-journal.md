@@ -488,3 +488,32 @@ Fresh browser OpenAI interpretation → reviewed criteria → real reader job su
 Updated `expanded-live-acceptance.md`, checklist, primary demo instructions and interview/readiness notes. This phase preserves the existing architecture and normal reader permissions. The additive approach retains IDs; exact grouping avoids count-only false positives. Real positive paths pass; adversarial failures/cleanup remain mocked, and 20 contacts do not establish production-scale performance. Credentials/receipts/CSV remain private; no email sent, no unrelated mail processed, no deletion.
 
 Interview concepts: constrained interpretation versus deterministic execution; contact/thread cardinality; full context versus qualifying activity; migration/replay integrity; receipt privacy boundaries. No owner setup action remains. Rehearsal and recorded UI/error-message improvements remain; overview video/script/ElevenLabs explicitly deferred until final readiness.
+
+
+## Presentation production checkpoint — 2026-09-17 Eastern
+
+Goal: owner approved freezing implementation and preparing the narrated review demonstration, informed by the technical interview transcript. Focus on practical CRM/email integration, explainable selection, security boundaries and shipping tradeoffs. Treat transcript coaching blocks as unspoken suggestions, not interview evidence.
+
+Implementation: ten-chapter authored script, live demo runbook, technical Q&A, and offline interactive walkthrough with eighteen composed visuals. Real application captures are mixed with explanatory diagrams and explicitly described as an edited walkthrough, not an uncut recording. Stock ElevenLabs narration generated from the authored non-sensitive script; no raw interview transcript uploaded, no voice cloning or new subscription. Media artifacts are in the task output folder, outside the source repository.
+
+Validation: eighteen-frame contact sheet reviewed; browser initial render, Next navigation, chapter selection and terminal disabled Next passed. Screenshots mask account identifiers; raw captures, live CSV, tokens and transcript excluded from the 24-file rehearsal ZIP. Existing expanded live acceptance remains the application evidence; code was not changed or rebuilt during presentation production.
+
+Decisions/assumptions: use actual verified app results and curated diagrams for a repeatable explanation; retain a separate click-by-click live runbook for interactive review. Do not claim production compliance or scale. Fictional Gmail/HubSpot records are live-service data; adversarial automated tests still use mocks.
+
+Remaining: ElevenLabs export is generated but automated Download did not produce a local MP3. Manual download requested; do not regenerate. Final video assembly, audio synchronization, audiovisual QA and completed-video delivery remain unchecked. Optional production reliability work is deferred by owner direction.
+
+Interview talking points: business value of joining systems of record; constrained AI versus deterministic eligibility; complete context versus matching activity; durable jobs and provider boundaries; honest production tradeoffs. Owner action: download the existing ElevenLabs MP3 to Downloads.
+
+
+## Narrated video complete — 2026-09-17 Eastern
+
+Owner supplied the existing ElevenLabs MP3. Assembled an 11:09 1080p H.264/AAC edited walkthrough with eighteen distinct visuals, ten embedded chapters and corrected selectable English captions. Local speech recognition aligned paragraph transitions; no audio was sent to another service and no narration was regenerated. MP4, source MP3, script, live runbook, Q&A, offline walkthrough, chapter list and validation report are packaged in the task output folder as plum-demo-complete.zip.
+
+Validation: full audiovisual stream decode completed with zero errors; output duration 669.21 seconds; decoded conversation frame inspected for layout and privacy masks, supplementing the eighteen-frame composition review. In-app browser playback preview crashed, so successful browser playback is not claimed; deliver standard MP4 for local playback. No application code changed and no live provider processing occurred. Edited captures were chosen for repeatable narration; the separate runbook supports a real interactive demonstration. Production limitations and fictional/live data distinction remain explicit. Interview concepts: constrained AI, deterministic rules, conversation completeness, durable jobs, production tradeoffs. Owner action: rehearse in a local media player, then practice the live runbook.
+
+
+## Setup guide and data-boundary wording — 2026-09-17
+
+Goal: remove the private-GitHub dependency from the setup link and clarify data deletion and result cardinality. Added a static Next.js /setup-guide page with local setup, OAuth, HubSpot, interpretation, verification and removal instructions. SetupPanel links locally. ConnectionDetails and the delete confirmation explicitly distinguish app database deletion from untouched Gmail/HubSpot source data and downloaded files. ExportPreview explains one contact–thread pair per row. No deletion or provider mutation was executed; existing backend behavior and architecture remain unchanged.
+
+Validation: lint, strict types, all 264 unit tests and production build passed. Four API end-to-end tests passed against isolated synthetic data. Seven browser tests could not launch because the local Playwright Chromium executable is missing (not application assertion failures). Direct browser inspection confirmed the new guide loads with its sections and back link without GitHub access. Web app rebuilt/restarted; administrator sign-in is required again. No new live ingestion was run. A local guide was selected over a private GitHub link for reviewer access; source docs retain detailed operator procedures. Remaining: owner sign-in and optional full browser suite rerun when Chromium is installed. Interview concepts: source versus derived data; credential retention versus deletion; foreign-key cascading; contact/thread cardinality.

@@ -74,8 +74,9 @@ export function ConnectionDetails({
           <div>
             <strong>Delete local workspace data</strong>
             <p>
-              Remove requests, normalized records, and exports. Provider
-              accounts are not changed.
+              Remove saved runs, imported CRM/email records, and stored exports
+              from this app’s database. Gmail messages and HubSpot records are
+              not deleted. Connections and downloaded CSV files are kept.
             </p>
           </div>
           <button
