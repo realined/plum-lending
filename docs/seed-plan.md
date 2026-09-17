@@ -1,12 +1,12 @@
 # Controlled live seed — review proposal
 
-Status: the deterministic dataset, MIME generator, separate OAuth helper, guarded provider writer, durable operation journal, preflight, replay and cleanup commands are implemented and contract-tested offline. Separate writer credentials and live preflight/apply/cleanup remain **unverified**. Nothing in this document authorizes live writes. The normal app now has real Gmail and HubSpot connections, but still contains zero ingested records.
+Status: live writer identity/scopes, consent, preflight, approved seed creation, association/thread verification and replay passed on 2026-09-16. The normal read-only application then passed two reviewed-specification reader runs and a downloaded CSV check. Live cleanup remains untested; full natural-language acceptance is pending. This document is a record and procedure, not blanket authorization for future writes.
 
 Run `pnpm seed:preview` to reproduce the proposal. It loads no environment file and has no network/database imports. Other arguments are rejected. The default frozen reference time is `2026-09-16T12:00:00.000Z`, so the qualifying interval is `[2024-09-16T12:00:00.000Z, 2026-06-16T12:00:00.000Z)`. The output includes a SHA-256 digest of the complete proposal. A changed namespace, date or record set requires a new review; the actual live request's frozen window must be checked before comparing results.
 
 ## Records and expected results
 
-Every email uses `example.test`; the approved real mailbox will replace only the lender role inside the private insertion process. Every CRM contact email, company name/domain, deal name and RFC Message-ID will carry `bentech-lending-poc-v1`. These fictional names and amounts were invented for the challenge.
+The owner approved namespaced `@example.com` CRM contact addresses and their matching Gmail participants after live HubSpot rejected `.test` with INVALID_EMAIL. `example.com` is reserved by IANA for documentation. Company domains, RFC Message-IDs, synthetic CC and the lender placeholder retain `example.test`; the approved real mailbox replaces only the lender role during private insertion. Automatic company creation/association is disabled in the lab so only the reviewed associations are created. Every CRM contact email, company name/domain, deal name and RFC Message-ID will carry `bentech-lending-poc-v1`. These fictional names and amounts were invented for the challenge.
 
 | Contact | Company (namespace prefix omitted here) | Role | Deal | Email scenario | Expected |
 | --- | --- | --- | --- | --- | --- |
@@ -32,7 +32,7 @@ The owner selected option B: insert/read/labels, with synthetic messages retaine
 
 Gmail's insertion method accepts a raw message and `internalDateSource=dateHeader`; it does not send the inserted mail. Thread grouping requires the returned `threadId`, matching subjects and valid reply headers. See [message insertion](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/insert) and [thread requirements](https://developers.google.com/workspace/gmail/api/guides/threads). The proposed distinction between scopes follows [Google's scope definitions](https://developers.google.com/workspace/gmail/api/auth/scopes).
 
-## Implemented writer safeguards — live proof still required
+## Implemented writer safeguards
 
 1. Refuse live operations unless `ALLOW_DEMO_SEED=true`, the owner-approved proposal digest matches, and the configured namespace is stable. Preview remains entirely offline.
 2. Verify the Gmail profile and HubSpot portal against the ignored owner-local selection before reads/writes. HubSpot's private-app token information endpoint can verify the portal and scopes without placing a token in a URL. See [private-app token information](https://developers.hubspot.com/docs/apps/legacy-apps/private-apps/overview).
@@ -45,13 +45,13 @@ Gmail's insertion method accepts a raw message and `internalDateSource=dateHeade
 
 Stop web/worker processes before apply or cleanup; the CLI additionally rejects queued/running exports. Disable the insertion receipt before cleanup. The active-job check is not a shared lock against a newly queued export, so stopping the app is an operational prerequisite. Verify each recorded ID and namespace again. Archive only the recorded HubSpot contacts, companies and deals. Under option A, remove the custom seed label and move only recorded seed message IDs to Trash. Under option B, remove only the dedicated seed label; explain that synthetic mail remains searchable in Gmail itself. The app searches Spam/Trash, so Trash alone is insufficient. Never delete an entire thread that might include an unseeded reply, empty Trash, or delete unrelated records.
 
-Keep the private operation journal for recovery and replay evidence. A reset policy must account for archived CRM records and the retained/trash Gmail messages; do not blindly recreate a dataset after cleanup. Offline tests verify replay and label-only cleanup. Actual provider behavior still needs live verification. Apply after cleanup is deliberately blocked; restoring archived CRM objects or creating a newly reviewed namespace is a manual recovery decision.
+Keep the private operation journal for recovery and replay evidence. A reset policy must account for archived CRM records and the retained/trash Gmail messages; do not blindly recreate a dataset after cleanup. Offline tests verify replay and label-only cleanup. Live apply/replay behavior is verified; live cleanup remains untested. Apply after cleanup is deliberately blocked; restoring archived CRM objects or creating a newly reviewed namespace is a manual recovery decision.
 
 ## Evidence and remaining gate
 
-Thirty-five focused tests pass. The original fifteen cover deterministic fixture identity, safe date/namespace input, changed-plan rejection, header-injection rejection, all MIME dates/headers/bodies/CC/attachment round-trips, and the real normalization/filter/CSV path producing exactly the two expected contacts while preserving all four Cedar messages. Gmail projection is simulated in that test; actual Gmail threading, internal dates, associations, repeat seeding and live CSV output remain unverified.
+Thirty-five focused tests pass. The original fifteen cover deterministic fixture identity, safe date/namespace input, changed-plan rejection, header-injection rejection, all MIME dates/headers/bodies/CC/attachment round-trips, and the real normalization/filter/CSV path producing exactly the two expected contacts while preserving all four Cedar messages. That automated test simulates Gmail responses. Separately, real Gmail threading/historical dates, CRM associations, seed replay and live-reader CSV output now pass.
 
-The owner selected the narrow cleanup policy. Additional writer tests verify account/scope mismatch rejection, replay without duplicate creates, an uncertain-create journal, mixed-thread rejection, label-only cleanup, endpoint restrictions, exact writer scopes, encrypted short-lived authorization, and a real local HTTP callback rejecting a mismatched state before any Google request. Separate credentials and owner consent are needed next. Run read-only preflight, then seek approval of the concrete live operation before any insertion or CRM record creation. The OpenAI no-charges constraint remains a separate gate before the final natural-language run.
+The owner selected the narrow cleanup policy. Additional writer tests verify account/scope mismatch rejection, replay without duplicate creates, an uncertain-create journal, mixed-thread rejection, label-only cleanup, endpoint restrictions, exact writer scopes, encrypted short-lived authorization, and a real local HTTP callback rejecting a mismatched state before any Google request. The owner completed separate credentials, consent and reviewed seed approval; live creation and replay passed. Future writes still require the documented review/preflight safeguards. The OpenAI no-charges constraint remains a separate gate before the final natural-language run.
 
 
 ## Exact separate credential setup
@@ -66,3 +66,9 @@ The owner selected the narrow cleanup policy. Additional writer tests verify acc
 8. For an approved cleanup, stop live processing and run `pnpm seed:cleanup --approve=<reviewed-plan-sha256>`. This invalidates the receipt first, archives only verified journaled CRM records and deletes only the verified dedicated label. It refuses untracked labeled messages. It retains all Gmail messages and does not automatically clear existing app exports; separately review local-data cleanup through the app before a new acceptance baseline.
 
 The scope selection is owner-approved; credential creation, Google consent, live preflight and record-write approval are not completed yet. No tokens, accounts, operation journal or insertion receipt should enter source archives. A stale lock or pending create must be inspected before any manual recovery; do not remove it simply to force a retry.
+
+## Verified live execution — 2026-09-16
+
+Approved plan digest: `cc1ef0ff6f9c58ae201d55f2917a9bb097b581c6c86e3c2680759ef89630a75d`. HubSpot rejected the initial .test contact email. After owner approval, only contact addresses and matching message participants moved to reserved @example.com; company automation was disabled and verified. The one known created company was reconciled against its private journal, preserving its ID. The pending contact attempt was cleared only after verifying no contact existed.
+
+Apply created the exact 7/7/3 CRM and 6-thread/9-message Gmail corpus and published the private receipt. Replay returned the same journaled IDs, with no pending operation or duplicate creates. Both reader jobs yielded exactly the expected 2 rows and 5 messages. Full local verification after the compatibility change passed lint, strict types, 253 tests (including 35 seed tests), and production build. No email was sent. Cleanup is deliberately not exercised against the presentation dataset.

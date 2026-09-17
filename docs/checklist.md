@@ -12,10 +12,10 @@
 - [x] Durable job lease, retry/recovery, stable upserts
 - [x] Gmail adapter implementation and mocked contract verification
 - [x] Gmail live OAuth/read-only grant, approved-account profile and encrypted connection verified
-- [ ] Gmail live ingestion acceptance
+- [x] Gmail live ingestion through reviewed-specification worker runs
 - [x] HubSpot adapter implementation and mocked contract verification
 - [x] HubSpot live read checks and encrypted application connection verified
-- [ ] HubSpot live account identity, associations and ingestion acceptance
+- [x] HubSpot live account identity, associations and ingestion through reviewed-specification worker runs
 - [x] Auth, encrypted credentials, disconnect and local-data deletion
 - [x] Mocked provider and database integration tests
 
@@ -48,11 +48,11 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - [x] Verify the owner's local PostgreSQL and production worker with real account connections
 - [x] User completes Google OAuth and grants read-only Gmail access
 - [x] User connects a free HubSpot account with a private-app token
-- [ ] Ingest real data from both services
-- [ ] Verify deterministic eligibility and complete thread preservation against selected real records
-- [ ] Generate and download a CSV from live-connected data
-- [ ] Measure actual dataset size and elapsed runtime against the challenge target
-- [ ] Record sanitized evidence without correspondence, identities, or credentials
+- [x] Ingest real data from both services
+- [x] Verify deterministic eligibility and complete thread preservation against selected real records
+- [x] Generate and download a CSV from live-connected data
+- [x] Measure actual dataset size and elapsed runtime against the challenge target
+- [x] Record sanitized evidence without correspondence, identities, or credentials
 
 ## Latest verified evidence
 - Latest local: 253 Vitest tests across nine files pass, including 35 seed-plan/writer/OAuth tests. The preceding mailbox-isolation checkpoint passed 4 production API tests; those were not rerun for the separate CLI seeder. Earlier Linux CI passed 7 browser + 4 API tests before the mailbox-isolation change; no new CI publication has been performed.
@@ -69,7 +69,7 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - [x] Rerun isolated production API workflow tests: 3 passed in 6.1 seconds
 - [x] Resolve the shell interaction and offline integration-boundary gaps; real-account acceptance remains open
 
-The shell and core synthetic export journey are verified. Current phase: owner selected an existing job-search/BenTech mailbox; test-only isolation verified offline; dedicated Google Cloud project and Gmail API enablement verified; private environment created; Testing registration, sole test user and read-only scope saved; owner reports Google client creation and credential entry, with private field-presence/isolation checks passed. HubSpot onboarding and `contact_type` creation are verified. The owner created the read-only private app and privately saved its token; the real adapter authentication check passed. The live app now uses fresh Docker PostgreSQL 17.11 with migrations 1 and 2 and a separate worker. HubSpot is encrypted in the database and visibly Connected after administrator sign-in. The owner completed actual Gmail consent; the callback saved the approved profile and encrypted token, and the live UI shows two Connected providers. Both live ingestions remain pending. Configuration readiness, mocked contracts, native infrastructure checks and live-service proof remain separate evidence levels. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.
+The shell and core synthetic export journey are verified. Current phase: owner selected an existing job-search/BenTech mailbox; test-only isolation verified offline; dedicated Google Cloud project and Gmail API enablement verified; private environment created; Testing registration, sole test user and read-only scope saved; owner reports Google client creation and credential entry, with private field-presence/isolation checks passed. HubSpot onboarding and `contact_type` creation are verified. The owner created the read-only private app and privately saved its token; the real adapter authentication check passed. The live app now uses fresh Docker PostgreSQL 17.11 with migrations 1 and 2 and a separate worker. HubSpot is encrypted in the database and visibly Connected after administrator sign-in. The owner completed actual Gmail consent; the callback saved the approved profile and encrypted token, and the live UI shows two Connected providers. Both live ingestions now pass through reviewed-specification runs; natural-language acceptance remains pending. Configuration readiness, mocked contracts, native infrastructure checks and live-service proof remain separate evidence levels. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.
 
 ## Dedicated live baseline — owner-requested sequence
 
@@ -87,11 +87,18 @@ The shell and core synthetic export journey are verified. Current phase: owner s
 - [x] HubSpot application connection: existing connection function revalidated and encrypted the environment token; live UI shows Connected; no CRM records stored
 - [x] Phase 4 proposal: deterministic seven-case dataset, MIME generator and offline dry-run; owner selected insert/read/labels with retained Gmail messages on cleanup
 - [x] Phase 4 implementation: separate OAuth helper, guarded writer, private operation journal, preflight, replay and label-only cleanup; 35 focused tests pass
-- [ ] Phase 4 live proof: separate writer credentials/consent, real preflight, explicit dataset approval, seed both services, verify replay without duplicate creates
-- [ ] Phase 5: actual app connections, snapshot ingestion/associations, reviewed request, expected/actual comparison, full-thread CSV, repeat-run verification, timings and regression checks
+- [x] Phase 4 writer setup preparation: HubSpot eight-scope form prepared; separate Google seed project and Gmail API enablement verified; owner token/policy handoffs pending
+- [x] Phase 4 writer configuration: HubSpot writer token privately present and distinct; original reader restored/verified; separate Google registration, sole test user and three scopes saved; Web client form prepared for owner credential creation
+- [x] Phase 4 writer credential readiness: all separate writer fields privately present; HubSpot writer portal/eight scopes and real bounded read checks passed; Gmail consent helper started
+- [x] Separate Gmail writer consent: actual helper success, encrypted private unexpired authorization verified
+- [x] Resolve initial CRM inventory blocker: owner authorized archival of 2 sample contacts, 1 company and 1 deal; exact inventory journaled and archived; empty CRM and combined preflight verified
+- [x] Resolve live HubSpot INVALID_EMAIL: owner approved reserved example.com contact addresses and disabled company automation; known company reconciled safely
+- [x] Phase 4 live proof: separate writer credentials/consent, real preflight, explicit dataset approval, seed both services, verify replay without duplicate creates
+- [x] Phase 5 integration proof: live connections, snapshot ingestion/associations, reviewed typed specification, expected/actual comparison, full-thread downloaded CSV, repeat-run semantics/deduplication, timings and regression checks
+- [ ] Phase 5 complete journey: actual natural-language interpretation, five semantic cases and reviewed UI run; owner acceptance
 - [ ] Phase 6: baseline report and ranked improvements; wait for owner approval before refinement
 
-Only the owner-selected job-search/BenTech account is approved, under seed-only restrictions. Unrelated correspondence and other personal mailboxes remain excluded. All secrets, MFA, recovery, consent and legal acceptance are handled manually by the owner. No charge, deployment or publication is authorized. `pnpm seed:preview` and `pnpm sample` are offline only. The live writer, durable replay journal and cleanup commands are implemented and tested with synthetic provider responses. Separate writer credentials, live preflight and live writes are still pending; no seed write has occurred.
+Only the owner-selected job-search/BenTech account is approved, under seed-only restrictions. Unrelated correspondence and other personal mailboxes remain excluded. All secrets, MFA, recovery, consent and legal acceptance are handled manually by the owner. No charge, deployment or publication is authorized. `pnpm seed:preview` and `pnpm sample` are offline only. The live writer, durable replay journal and cleanup commands are implemented and tested with synthetic provider responses. Separate writer credentials, real preflight, approved writes and replay now pass. Live cleanup remains untested.
 
 
 ## Presentation deadline — Thursday, 2026-09-17, 4:00 PM America/New_York
@@ -105,3 +112,11 @@ The owner specified the deadline; the earlier feature pause remains in effect. T
 - [ ] After the verified baseline and owner review only: selective presentation polish, prioritizing explainability and reliability over new features
 
 Defer additional providers, continuous synchronization, multitenancy, deployment and an interface redesign. Presentation success depends on independently demonstrated correctness and a defensible architecture, not the number of features.
+
+## Live baseline checkpoint — 2026-09-16
+
+- Seed corpus verified: 7 contacts, 7 companies, 3 deals, 6 threads, 9 messages; replay creates no duplicates.
+- Reader jobs succeeded in 6.862 s and 7.402 s: 7 scanned, 2 included, 5 excluded, 2 threads, 5 messages, 0 failures.
+- UI four-message thread inspected; actual browser CSV downloaded and parsed privately: 8 exact columns, 2 rows, 5 messages.
+- Same-request enqueue deduplicates; canonical counts stay 7/7/3/2/5. All exported fields match except Gmail’s opaque attachment retrieval ID; raw CSV byte equality is not claimed.
+- AI interpretation was not invoked. API key, metered-use approval, five semantic cases and full natural-language UI run remain required.

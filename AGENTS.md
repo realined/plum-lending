@@ -3,7 +3,7 @@
 - Keep eligibility in `src/domain`; providers only translate and retrieve data.
 - AI receives the segment query only, returns a constrained schema, and never determines eligibility.
 - Use strict TypeScript, Zod at trust boundaries, parameterized database operations, and stable provider IDs.
-- Fixtures must be wholly synthetic and use example.test addresses. Never copy reference-sheet rows.
+- Fixtures must be wholly synthetic and use example.test addresses. Owner-approved live-seed exception: CRM contact addresses and their matching Gmail participants use namespaced @example.com addresses because HubSpot rejects .test. Company domains, RFC IDs and other offline fixtures retain example.test. Never copy reference-sheet rows.
 - Never log request bodies, correspondence, contact identities, provider responses, or secrets.
 - Make a change concrete before asking for credentials. Demo mode must remain usable offline.
 - Check changes with `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`. Use `pnpm test:e2e` for admin-flow changes.

@@ -2,7 +2,7 @@
 
 Start with [Phase 0 findings and gates](phase-0-setup-checklist.md). The owner has now selected an existing job-search/BenTech Gmail account for synthetic-only use, superseding new-mailbox creation. Use [the mailbox isolation settings](mailbox-isolation.md) and a new free HubSpot instance. Never access unrelated correspondence or other personal accounts. The owner requested guided setup, with manual handoffs for personal details, secrets, MFA/recovery, CAPTCHA, legal acceptance and OAuth consent. Do not open account pages until the inspection checklist has been delivered. Creating configuration does not authorize the agent to connect or ingest. No credentials belong in chat, screenshots, source control, logs, or the source archive.
 
-Current checkpoint: the dedicated Cloud project is created and Gmail API is enabled. OAuth registration is in External/Testing mode; the sole approved test user and Gmail read-only scope are saved. The owner reports the Web client was created and its credentials saved privately. Presence-only checks verify both credential fields, the exact callback, expected mailbox, seed-only settings and file permissions; actual Google consent/callback has now passed, and the saved profile matches the approved mailbox. Free HubSpot onboarding is complete, with automatic email/contact sync skipped. The single-line text `contact_type` property exists. The owner created the private app with five read scopes and saved its token locally. The real adapter authentication check passed for contacts, Sponsor property, companies, deals and pipelines; the existing connection function then revalidated and encrypted the token into the local database, and the live UI shows Connected. Account identity, associations and ingestion still require verification. The private local `.env` now exists with generated security values; fill provider fields in that existing file instead of rerunning setup. The owner installed Docker Desktop. PostgreSQL 17.11 is healthy on loopback, migrations 1 and 2 are applied, and the live web app and separate worker are verified. The live UI shows both Gmail and HubSpot Connected, with no completed ingestion. Seed writes remain pending; see the offline [dataset and permission proposal](seed-plan.md). The full configuration check reports missing `OPENAI_API_KEY`; this blocks interpretation, not database setup or Gmail consent, and no paid call is authorized.
+Current checkpoint: reader OAuth/private-app authentication, approved account identities, separate writer consent, live seed creation/replay, associations and two live reader jobs have passed. PostgreSQL 17.11, migrations 1/2 and the separate worker are running. The UI preserves the full thread and downloads a verified 2-row CSV containing 5 messages. See [count-only results](live-acceptance.md). These jobs used the reviewed typed specification directly; live AI interpretation still needs `OPENAI_API_KEY` and explicit spending authorization. Preserve the existing private `.env` and encryption key; do not rerun initial setup. No deployment or publication is authorized.
 
 ## 1. Local runtime and database
 
@@ -14,7 +14,7 @@ node --version
 pnpm --version
 ```
 
-This changes only the current shell's tool lookup. On another machine, install Node 22+ and pnpm 11.19+ normally. Docker/PostgreSQL are not currently installed on the verified local PATH; install and start Docker Desktop or supply an existing PostgreSQL 17 database before proceeding.
+This changes only the current shell's tool lookup. On another machine, install Node 22+ and pnpm 11.19+ normally. The owner’s Docker Desktop and PostgreSQL 17.11 are now running. On another machine, install/start Docker Desktop or supply an existing PostgreSQL 17 database.
 
 From `/Users/leebennett/Projects/plum-lending`:
 
@@ -81,7 +81,7 @@ Only the segmentation query is sent, with `store:false`. The system sends no Gma
 | `GOOGLE_REDIRECT_URI` | The exact URI registered above |
 | `GMAIL_EXPECTED_MAILBOX` | Owner-approved address; compared to the OAuth profile |
 | `GMAIL_DATA_SCOPE` | `seed-only`; never use `mailbox` for this account |
-| `GMAIL_SEED_MANIFEST_PATH` | `.data/live-seed/manifest.json`, written by the future approved seeder |
+| `GMAIL_SEED_MANIFEST_PATH` | `.data/live-seed/manifest.json`, written and verified by the approved seeder |
 | `LENDER_ALIASES` | Optional owned aliases only |
 | `HUBSPOT_PRIVATE_APP_TOKEN` | Owner enters private-app token locally |
 | `HUBSPOT_SPONSOR_PROPERTY` / `HUBSPOT_SPONSOR_VALUE` | `contact_type` / `Sponsor`, or confirmed internal mapping |
@@ -130,6 +130,6 @@ The web and worker processes load the same `.env` file. Restart both after confi
 
 Use the built-in browser for guided account setup. The owner performs security prompts, private entry, legal acceptance and OAuth consent; never observe or capture secret values. Confirm that the selected account is the owner-approved job-search/BenTech mailbox before proceeding with the actual app connection. The expected-mailbox check must pass and `seed-only` must remain enabled. No other personal mailbox is allowed.
 
-The app remains read-only. The separate Phase 4 seeder is implemented and tested offline; its writer credentials, live account preflight and actual writes remain pending. Follow the exact separate `.env.seed`, OAuth callback and scope instructions in [seed-plan.md](seed-plan.md). The owner selected insert/read/labels and retained-mail cleanup. Wait for explicit approval of the proposed dataset before writes. Do not send emails. `pnpm sample` only creates offline examples and does not seed live services.
+The app remains read-only. The separate Phase 4 seeder has passed live credential checks, preflight, approved writes, association/thread verification and replay. Live cleanup remains untested. Follow the exact separate `.env.seed`, OAuth callback and scope instructions in [seed-plan.md](seed-plan.md). The owner selected insert/read/labels and retained-mail cleanup. Wait for explicit approval of the proposed dataset before writes. Do not send emails. `pnpm sample` only creates offline examples and does not seed live services.
 
 After seeding, follow [live-acceptance.md](live-acceptance.md) using the seed manifest, then report the measured baseline before proposing refinements. The current workflow performs snapshot ingestion within each export job; it has no separate Sync button. No deployment or publication occurs in these phases.

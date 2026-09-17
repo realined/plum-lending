@@ -132,7 +132,8 @@ export function createSeedPlan(asOf = DEMO_AS_OF, namespace = SEED_NAMESPACE) {
       expected,
       reason,
       company: `[${namespace}] ${company}`,
-      email: `${key}.${namespace}@example.test`,
+      // HubSpot rejects the reserved .test TLD; this approved live corpus uses IANA example.com.
+      email: `${key}.${namespace}@example.com`,
       domain: `${key}.${namespace}.example.test`,
     }),
   );

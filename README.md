@@ -2,7 +2,7 @@
 
 A working interview POC for turning CRM relationships and complete email conversations into an explainable contact audience and downloadable CSV.
 
-**Submission status: real Gmail OAuth, HubSpot connection and local PostgreSQL/worker are verified; mandatory live ingestion and CSV acceptance remain pending.** Demo mode and mocked provider tests are development aids. The integration is not considered complete until the approved Gmail account (synthetic messages only) and a new free HubSpot instance have passed the live checklist in [docs/live-acceptance.md](docs/live-acceptance.md).
+**Submission status: real Gmail/HubSpot seeding, ingestion, deterministic filtering, full-thread preservation and downloaded CSV are verified. Live AI interpretation and the complete natural-language acceptance journey remain pending.** See [the measured acceptance record](docs/live-acceptance.md). Mocks remain development aids.
 
 ![Synthetic demo interface](docs/demo-preview.png)
 
@@ -47,7 +47,7 @@ pnpm start
 pnpm worker
 ```
 
-Current owner-local checkpoint: the dedicated Google Cloud project exists and Gmail API is enabled. A private `.env` has been generated; both provider credentials are populated privately. Docker PostgreSQL 17.11 is healthy, migrations 1 and 2 are applied, and the live web app and separate worker are running. OAuth registration is in Testing mode with one approved test user and Gmail read-only scope; The actual Gmail consent/callback passed, its profile matches the approved account, and the encrypted connection is saved. Free HubSpot onboarding and the `contact_type` schema are complete. The owner created the read-only private app and saved its token; the live adapter check passed for contacts, Sponsor property, companies, deals and pipelines. The existing connection function also validated and encrypted the HubSpot token into PostgreSQL; the live UI shows Connected. CRM account identity, associations, ingestion and seed writes remain unverified. `pnpm seed:preview` prints a deterministic offline proposal. The separate OAuth helper, guarded provider writer, durable replay journal and narrow cleanup are implemented and tested offline; writer credentials, live preflight and writes remain pending. Review [the seed plan](docs/seed-plan.md). `config:check` still reports missing `OPENAI_API_KEY`; no model spending is authorized. See the [build journal](docs/build-journal.md).
+Current owner-local checkpoint: both read-only connections, Docker PostgreSQL 17.11 and the separate live worker are verified. The owner approved a separate synthetic-data writer. Real seed creation and replay passed: 7 contacts, 7 companies, 3 deals, 6 Gmail threads and 9 messages. Two reviewed-specification worker runs returned the exact expected 2 contacts, 2 threads and 5 messages in 6.862 and 7.402 seconds, with zero failures. Full-thread UI inspection and the downloaded eight-column CSV passed. No AI was used in these integration runs; `OPENAI_API_KEY` and spending authorization remain pending. Live cleanup is untested. See [acceptance evidence](docs/live-acceptance.md), [seed plan](docs/seed-plan.md) and [build journal](docs/build-journal.md).
 
 `setup:live` refuses to overwrite an existing `.env`. Read [live-acceptance.md](docs/live-acceptance.md) before connecting or running. No provider records are modified and no emails are sent by this application.
 

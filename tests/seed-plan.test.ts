@@ -30,7 +30,7 @@ describe("controlled live-seed proposal (offline)", () => {
     expect(new Set(plan.messages.map((m) => m.rfcMessageId)).size).toBe(9);
     expect(plan.expectedContactKeys).toEqual(["cedar", "willow"]);
     for (const c of plan.contacts) {
-      expect(c.email).toMatch(/@example\.test$/);
+      expect(c.email).toMatch(/@example\.com$/);
       expect(c.email).toContain(plan.namespace);
       expect(c.domain).toContain(`${plan.namespace}.example.test`);
       expect(c.company).toContain(`[${plan.namespace}]`);
@@ -255,7 +255,7 @@ describe("controlled live-seed proposal (offline)", () => {
     expect(csv).toContain("outside the qualifying activity window");
     expect(csv).toContain("cedar-property-summary.txt");
     for (const excluded of ["granite", "juniper", "oldmill", "birch", "meadow"])
-      expect(csv).not.toContain(`${excluded}.${plan.namespace}@example.test`);
+      expect(csv).not.toContain(`${excluded}.${plan.namespace}@example.com`);
   });
 });
 
