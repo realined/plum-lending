@@ -110,7 +110,7 @@ The owner specified the deadline; the earlier feature pause remains in effect. T
 - [x] Owner authorizes up to $1 total model usage for acceptance and rehearsal
 - [x] Owner saves OpenAI API credential and confirms usable API billing; private presence/protection checks pass
 - [x] Before 2:00 PM target: final local regression/diff/privacy review, current source package/documentation and local checkpoint
-- [ ] Obtain fresh publication authorization before pushing; remote remains behind local acceptance evidence
+- [x] Owner authorized GitHub push; commits through ed17f77 pushed and fresh CI passed (253 unit tests, 11 browser/API tests, native PostgreSQL verification)
 - [ ] By 3:00 PM: two rehearsals of the live workflow, architecture explanation and tradeoff Q&A; prepare a clearly labeled offline fallback and private synthetic-only evidence if approved
 - [ ] After the verified baseline and owner review only: selective presentation polish, prioritizing explainability and reliability over new features
 
@@ -134,4 +134,16 @@ Defer additional providers, continuous synchronization, multitenancy, deployment
 - [x] Runtime log review shows aggregate events without correspondence or credential values
 - [ ] Owner chooses refinements/rehearsal after reviewing `baseline-report.md`
 
-No further product changes are authorized by completion of this baseline. Publication remains paused.
+Subsequent owner instructions authorize pushing the latest work, correctness review/fixes, and preparing a fuller fictional demo corpus. Expanded live writes require the reviewed plan approval. Video/ElevenLabs production remains paused until final readiness.
+
+## Post-baseline correctness and expanded corpus
+
+- [x] Named recipient-group regression: four failing tests reproduced; recursive flattening fix passes all 257 tests, lint/types/build
+- [x] Restart web and separate worker with the verified fix
+- [x] Prepare additive 20-contact / 59-message proposal preserving existing records
+- [x] Owner confirms 20-contact expanded demo scope
+- [ ] Complete expanded live preflight and reviewed write approval
+- [x] Implement and verify additive seeding/multiple-thread support: 42 seed tests; full 264 tests/lint/types/build pass
+- [ ] Renew separate writer consent if expired; run approved expansion and duplicate-free replay
+- [ ] Verify real expanded ingestion and exact 10-contact / 12-row / 45-message result
+- [ ] Final readiness review, rehearsal, then overview script/video/ElevenLabs narration

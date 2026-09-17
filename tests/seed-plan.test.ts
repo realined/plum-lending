@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { simpleParser } from "mailparser";
-import { createSeedPlan, previewSeedPlan, seedPlanDigest } from "@/seed/plan";
+import {
+  createSeedPlan,
+  createExpandedSeedPlan,
+  seedThreadKey,
+  assertSeedPlan,
+  previewSeedPlan,
+  seedPlanDigest,
+} from "@/seed/plan";
 import { renderSeedMessage } from "@/seed/mime";
 import { normalizeGmailThread } from "@/domain/normalize";
 import { executeSegment } from "@/domain/executor";
@@ -126,142 +133,168 @@ describe("controlled live-seed proposal (offline)", () => {
     }
   });
 
-  it("produces the independently expected two-contact result through normalization, filtering and CSV with full recent context", async () => {
-    const plan = createSeedPlan();
-    const threads: Thread[] = [];
-    // Simulate Gmail's MIME projection after parsing the actual generated RFC content.
-    // Real Gmail insertion/thread grouping remains a separate live acceptance check.
-    for (const caseKey of new Set(
-      plan.messages.map((message) => message.caseKey),
-    )) {
-      const messages = [];
-      for (const message of plan.messages.filter(
-        (m) => m.caseKey === caseKey,
-      )) {
-        const parsed = await simpleParser(
-          renderSeedMessage(plan, message, plan.lenderPlaceholder),
-        );
-        messages.push({
-          id: message.key,
-          threadId: caseKey,
-          internalDate: String(parsed.date!.getTime()),
-          payload: {
-            mimeType: "multipart/mixed",
-            headers: parsed.headerLines.map((h) => {
-              const split = h.line.indexOf(":");
-              return {
-                name: h.line.slice(0, split),
-                value: h.line.slice(split + 1).trim(),
-              };
-            }),
-            parts: [
-              {
-                mimeType: "text/plain",
-                body: { data: Buffer.from(parsed.text!).toString("base64url") },
-              },
-              {
-                mimeType: "text/html",
-                body: {
-                  data: Buffer.from(String(parsed.html)).toString("base64url"),
+  it.each([false, true])(
+    "produces the independent truth set through normalization, filtering and CSV (expanded=%s)",
+    async (expanded) => {
+      const plan = expanded ? createExpandedSeedPlan() : createSeedPlan();
+      const threads: Thread[] = [];
+      // Simulate Gmail's MIME projection after parsing the actual generated RFC content.
+      // Real Gmail insertion/thread grouping remains a separate live acceptance check.
+      for (const caseKey of new Set(plan.messages.map(seedThreadKey))) {
+        const messages = [];
+        for (const message of plan.messages.filter(
+          (m) => seedThreadKey(m) === caseKey,
+        )) {
+          const parsed = await simpleParser(
+            renderSeedMessage(plan, message, plan.lenderPlaceholder),
+          );
+          messages.push({
+            id: message.key,
+            threadId: caseKey,
+            internalDate: String(parsed.date!.getTime()),
+            payload: {
+              mimeType: "multipart/mixed",
+              headers: parsed.headerLines.map((h) => {
+                const split = h.line.indexOf(":");
+                return {
+                  name: h.line.slice(0, split),
+                  value: h.line.slice(split + 1).trim(),
+                };
+              }),
+              parts: [
+                {
+                  mimeType: "text/plain",
+                  body: {
+                    data: Buffer.from(parsed.text!).toString("base64url"),
+                  },
                 },
-              },
-              ...parsed.attachments.map((a) => ({
-                mimeType: a.contentType,
-                filename: a.filename,
-                body: { attachmentId: "synthetic-attachment", size: a.size },
-              })),
-            ],
-          },
-        });
+                {
+                  mimeType: "text/html",
+                  body: {
+                    data: Buffer.from(String(parsed.html)).toString(
+                      "base64url",
+                    ),
+                  },
+                },
+                ...parsed.attachments.map((a) => ({
+                  mimeType: a.contentType,
+                  filename: a.filename,
+                  body: { attachmentId: "synthetic-attachment", size: a.size },
+                })),
+              ],
+            },
+          });
+        }
+        threads.push(
+          await normalizeGmailThread({ id: caseKey, messages }, [
+            plan.lenderPlaceholder,
+          ]),
+        );
       }
-      threads.push(
-        await normalizeGmailThread({ id: caseKey, messages }, [
-          plan.lenderPlaceholder,
-        ]),
-      );
-    }
-    const crm: CRMSnapshot = {
-      contacts: plan.contacts.map((c) => ({
-        id: c.key,
-        firstName: c.firstName,
-        lastName: c.lastName,
-        emails: [c.email],
-        role: c.role,
-        companyIds: [c.key],
-        dealIds: c.deal ? [c.key] : [],
-        associationsComplete: true,
-      })),
-      companies: plan.contacts.map((c) => ({ id: c.key, name: c.company })),
-      deals: plan.contacts
-        .filter((c) => c.deal !== null)
-        .map((c) => ({
+      const crm: CRMSnapshot = {
+        contacts: plan.contacts.map((c) => ({
           id: c.key,
-          name: `[${plan.namespace}] ${c.key}`,
-          pipeline: "synthetic",
-          stage: c.deal!,
-          status: c.deal!,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          emails: [c.email],
+          role: c.role,
+          companyIds: [c.key],
+          dealIds: c.deal ? [c.key] : [],
+          associationsComplete: true,
         })),
-      failures: [],
-      capturedAt: plan.asOf,
-    };
-    const provider: EmailProvider = {
-      name: "gmail",
-      async validateConnection() {
-        return { mailbox: plan.lenderPlaceholder };
-      },
-      async *searchThreads() {
-        for (const thread of threads) yield thread.providerThreadId;
-      },
-      async getThread(id) {
-        return threads.find((t) => t.providerThreadId === id)!;
-      },
-      async synchronize() {
-        throw new Error("Not used by snapshot execution");
-      },
-    };
-    const result = await executeSegment(plan.spec, crm, provider, [
-      plan.lenderPlaceholder,
-    ]);
-    expect(result.rows.map((row) => row.contactId).sort()).toEqual([
-      "cedar",
-      "willow",
-    ]);
-    expect(result.counts).toEqual({
-      contacts: 2,
-      threads: 2,
-      messages: 5,
-      excluded: 5,
-      failures: 0,
-      scannedContacts: 7,
-    });
-    expect(result.exclusions["Closed Won deal"]).toBe(1);
-    expect(result.exclusions["Not a Sponsor"]).toBe(1);
-    const cedar = result.rows.find((row) => row.contactId === "cedar")!;
-    expect(cedar.raw.messages).toHaveLength(4);
-    expect(cedar.qualifyingMessageIds).toEqual(["cedar-1", "cedar-3"]);
-    expect(Date.parse(cedar.lastActivity)).toBeGreaterThan(
-      Date.parse(plan.spec.endExclusive),
-    );
-    expect(cedar.raw.messages[2].attachments[0].filename).toBe(
-      "cedar-property-summary.txt",
-    );
-    expect(cedar.raw.messages[0].cc[0].email).toBe(
-      `analyst.${plan.namespace}@example.test`,
-    );
-    const csv = toCsv(result.rows);
-    expect(csv.split("\r\n")[0]).toBe(
-      "\uFEFF" + CSV_HEADERS.map((header) => `"${header}"`).join(","),
-    );
-    expect(csv).toContain("outside the qualifying activity window");
-    expect(csv).toContain("cedar-property-summary.txt");
-    for (const excluded of ["granite", "juniper", "oldmill", "birch", "meadow"])
-      expect(csv).not.toContain(`${excluded}.${plan.namespace}@example.com`);
-  });
+        companies: plan.contacts.map((c) => ({ id: c.key, name: c.company })),
+        deals: plan.contacts
+          .filter((c) => c.deal !== null)
+          .map((c) => ({
+            id: c.key,
+            name: `[${plan.namespace}] ${c.key}`,
+            pipeline: "synthetic",
+            stage: c.deal!,
+            status: c.deal!,
+          })),
+        failures: [],
+        capturedAt: plan.asOf,
+      };
+      const provider: EmailProvider = {
+        name: "gmail",
+        async validateConnection() {
+          return { mailbox: plan.lenderPlaceholder };
+        },
+        async *searchThreads() {
+          for (const thread of threads) yield thread.providerThreadId;
+        },
+        async getThread(id) {
+          return threads.find((t) => t.providerThreadId === id)!;
+        },
+        async synchronize() {
+          throw new Error("Not used by snapshot execution");
+        },
+      };
+      const result = await executeSegment(plan.spec, crm, provider, [
+        plan.lenderPlaceholder,
+      ]);
+      expect(result.rows.map((row) => row.contactId).sort()).toEqual(
+        expanded
+          ? [
+              "alder",
+              "alder",
+              "cedar",
+              "copper",
+              "harbor",
+              "harbor",
+              "maple",
+              "oak",
+              "pine",
+              "river",
+              "summit",
+              "willow",
+            ]
+          : ["cedar", "willow"],
+      );
+      expect(result.counts).toEqual({
+        contacts: expanded ? 10 : 2,
+        threads: expanded ? 12 : 2,
+        messages: expanded ? 45 : 5,
+        excluded: expanded ? 10 : 5,
+        failures: 0,
+        scannedContacts: expanded ? 20 : 7,
+      });
+      expect(result.exclusions["Closed Won deal"]).toBe(expanded ? 3 : 1);
+      expect(result.exclusions["Not a Sponsor"]).toBe(expanded ? 2 : 1);
+      const cedar = result.rows.find((row) => row.contactId === "cedar")!;
+      expect(cedar.raw.messages).toHaveLength(4);
+      expect(cedar.qualifyingMessageIds).toEqual(["cedar-1", "cedar-3"]);
+      expect(Date.parse(cedar.lastActivity)).toBeGreaterThan(
+        Date.parse(plan.spec.endExclusive),
+      );
+      expect(cedar.raw.messages[2].attachments[0].filename).toBe(
+        "cedar-property-summary.txt",
+      );
+      expect(cedar.raw.messages[0].cc[0].email).toBe(
+        `analyst.${plan.namespace}@example.test`,
+      );
+      const csv = toCsv(result.rows);
+      expect(csv.split("\r\n")[0]).toBe(
+        "\uFEFF" + CSV_HEADERS.map((header) => `"${header}"`).join(","),
+      );
+      expect(csv).toContain("outside the qualifying activity window");
+      expect(csv).toContain("cedar-property-summary.txt");
+      for (const excluded of [
+        "granite",
+        "juniper",
+        "oldmill",
+        "birch",
+        "meadow",
+      ])
+        expect(csv).not.toContain(`${excluded}.${plan.namespace}@example.com`);
+    },
+  );
 });
 
 // Live writer contracts use synthetic provider responses; no real accounts are called.
 import {
   SeedWriter,
+  assertPreservedSeedState,
   newSeedState,
   WRITER_SCOPES,
   type SeedState,
@@ -759,4 +792,151 @@ it("rejects a mismatched state through the actual loopback handler before contac
   expect(done.status).toBe(400);
   expect(await done.text()).not.toContain("synthetic-secret");
   expect(providerFetch).not.toHaveBeenCalled();
+});
+
+describe("additive expanded seed contracts", () => {
+  it("preserves the original plan and digest while validating the exact expanded manifest", () => {
+    const base = createSeedPlan(),
+      expanded = createExpandedSeedPlan();
+    expect(seedPlanDigest(base)).toBe(
+      "cc1ef0ff6f9c58ae201d55f2917a9bb097b581c6c86e3c2680759ef89630a75d",
+    );
+    expect(expanded.contacts.slice(0, 7)).toEqual(base.contacts);
+    expect(expanded.messages.slice(0, 9)).toEqual(base.messages);
+    expect(expanded.messages).toHaveLength(59);
+    expect(new Set(expanded.messages.map(seedThreadKey)).size).toBe(21);
+    expect(() => assertSeedPlan(expanded)).not.toThrow();
+    expanded.messages[10].text += "tampered";
+    expect(() => assertSeedPlan(expanded)).toThrow("SEED_PLAN_CHANGED");
+  });
+  it("verifies the base read-only, expands and replays without creating duplicates or changing original IDs", async () => {
+    const h = seedHarness();
+    await h.writer.apply("true", seedPlanDigest(h.plan));
+    const original = structuredClone(h.state),
+      expanded = createExpandedSeedPlan();
+    h.api.mockClear();
+    const next = await h.writer.prepareExpansion(seedPlanDigest(expanded));
+    expect(
+      h.api.mock.calls.every(
+        (call) =>
+          call[1] === "GET" ||
+          call[2] === "/oauth/v2/private-apps/get/access-token-info",
+      ),
+    ).toBe(true);
+    assertPreservedSeedState(original, next, h.plan);
+    const writer = new SeedWriter(
+      h.api,
+      expanded,
+      h.target,
+      next,
+      async () => {},
+    );
+    const receipt = await writer.apply("true", seedPlanDigest(expanded));
+    expect(receipt.threads).toHaveLength(21);
+    expect(receipt.threads.flatMap((t) => t.messages)).toHaveLength(59);
+    expect(Object.keys(next.contacts)).toHaveLength(20);
+    expect(Object.keys(next.companies)).toHaveLength(20);
+    expect(Object.keys(next.deals)).toHaveLength(8);
+    assertPreservedSeedState(original, next, h.plan);
+    h.api.mockClear();
+    expect(await writer.apply("true", seedPlanDigest(expanded))).toEqual(
+      receipt,
+    );
+    expect(
+      h.api.mock.calls.some(
+        (call) =>
+          call[1] === "POST" &&
+          call[2] !== "/oauth/v2/private-apps/get/access-token-info",
+      ),
+    ).toBe(false);
+    assertPreservedSeedState(original, next, h.plan);
+  });
+  it("rejects crossed thread membership even when all aggregate and per-contact counts match", async () => {
+    const h = seedHarness();
+    await h.writer.apply("true", seedPlanDigest(h.plan));
+    const expanded = createExpandedSeedPlan();
+    const next = await h.writer.prepareExpansion(seedPlanDigest(expanded));
+    const writer = new SeedWriter(
+      h.api,
+      expanded,
+      h.target,
+      next,
+      async () => {},
+    );
+    await writer.apply("true", seedPlanDigest(expanded));
+    const first = next.messages["alder-acquisition-2"];
+    const second = next.messages["alder-renovation-2"];
+    [first.threadId, second.threadId] = [second.threadId, first.threadId];
+    h.messages[first.id].threadId = first.threadId;
+    h.messages[second.id].threadId = second.threadId;
+    expect(
+      new Set(Object.values(next.messages).map((m) => m.threadId)).size,
+    ).toBe(21);
+    await expect(writer.verify()).rejects.toThrow(
+      "SEED_THREAD_GROUPING_FAILED",
+    );
+  });
+  it("rejects expansion approval and incomplete original data before migration", async () => {
+    const h = seedHarness();
+    await expect(h.writer.prepareExpansion("wrong")).rejects.toThrow(
+      "SEED_EXPANSION_APPROVAL_REQUIRED",
+    );
+    expect(h.api).not.toHaveBeenCalled();
+    await expect(
+      h.writer.prepareExpansion(seedPlanDigest(createExpandedSeedPlan())),
+    ).rejects.toThrow("SEED_DATASET_INCOMPLETE");
+  });
+  it("rejects changed original IDs and unknown original associations", async () => {
+    const h = seedHarness();
+    await h.writer.apply("true", seedPlanDigest(h.plan));
+    const original = structuredClone(h.state);
+    const next = await h.writer.prepareExpansion(
+      seedPlanDigest(createExpandedSeedPlan()),
+    );
+    next.contacts.cedar = "99999";
+    expect(() => assertPreservedSeedState(original, next, h.plan)).toThrow(
+      "SEED_EXPANSION_ORIGINAL_ID_CHANGED",
+    );
+    const api = h.api.getMockImplementation()!;
+    h.api.mockImplementation(async (...args) => {
+      if (
+        args[0] === "hubspot" &&
+        args[1] === "GET" &&
+        args[2].includes("/associations/")
+      )
+        return { results: [{ toObjectId: "99999" }] };
+      return api(...args);
+    });
+    await expect(
+      h.writer.prepareExpansion(seedPlanDigest(createExpandedSeedPlan())),
+    ).rejects.toThrow("SEED_ASSOCIATION_MISMATCH");
+  });
+  it("retains the uncertain-write stop on an interrupted additive create", async () => {
+    const h = seedHarness();
+    await h.writer.apply("true", seedPlanDigest(h.plan));
+    const expanded = createExpandedSeedPlan();
+    const next = await h.writer.prepareExpansion(seedPlanDigest(expanded));
+    const api = h.api.getMockImplementation()!;
+    h.api.mockImplementation(async (...args) => {
+      if (args[1] === "POST" && args[2].startsWith("/crm/v3/objects/"))
+        throw new SeedError("SYNTHETIC_CONNECTION_INTERRUPTED");
+      return api(...args);
+    });
+    const writer = new SeedWriter(
+      h.api,
+      expanded,
+      h.target,
+      next,
+      async () => {},
+    );
+    await expect(
+      writer.apply("true", seedPlanDigest(expanded)),
+    ).rejects.toThrow("SYNTHETIC_CONNECTION_INTERRUPTED");
+    expect(next.pending).toBe("companies:alder");
+    h.api.mockClear();
+    await expect(
+      writer.apply("true", seedPlanDigest(expanded)),
+    ).rejects.toThrow("SEED_UNCERTAIN_WRITE_INSPECTION_REQUIRED");
+    expect(h.api).not.toHaveBeenCalled();
+  });
 });

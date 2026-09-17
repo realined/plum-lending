@@ -48,10 +48,17 @@ export const gmailThreadSchema = z.object({
 function addresses(
   value: AddressObject | AddressObject[] | undefined,
 ): Identity[] {
-  return (Array.isArray(value) ? value : [value])
-    .flatMap((v) => v?.value ?? [])
-    .filter((v) => v.address)
-    .map((v) => ({ email: normalizeEmail(v.address!), name: v.name ?? "" }));
+  const flatten = (entries: AddressObject["value"]): Identity[] =>
+    entries.flatMap((entry) =>
+      entry.group
+        ? flatten(entry.group)
+        : entry.address
+          ? [{ email: normalizeEmail(entry.address), name: entry.name ?? "" }]
+          : [],
+    );
+  return flatten(
+    (Array.isArray(value) ? value : [value]).flatMap((v) => v?.value ?? []),
+  );
 }
 export function cleanHtml(html: string): string {
   return sanitizeHtml(html, {

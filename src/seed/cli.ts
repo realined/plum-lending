@@ -3,7 +3,7 @@ import path from "node:path";
 import { z } from "zod";
 import { decryptToken } from "@/server/crypto";
 import { db } from "@/server/database";
-import { createSeedPlan, seedPlanDigest } from "./plan";
+import { createSeedPlan, createExpandedSeedPlan, seedPlanDigest } from "./plan";
 import { authorizeSeedWriter } from "./oauth";
 import {
   exclusiveSeed,
@@ -12,7 +12,12 @@ import {
   SEED_DIRECTORY,
   SeedError,
 } from "./private-files";
-import { newSeedState, SeedWriter, stateSchema } from "./writer";
+import {
+  newSeedState,
+  SeedWriter,
+  stateSchema,
+  assertPreservedSeedState,
+} from "./writer";
 import { seedTransport } from "./transport";
 
 async function main() {
@@ -32,7 +37,7 @@ async function main() {
     return;
   }
   if (
-    !["auth", "preflight", "apply", "cleanup"].includes(command) ||
+    !["auth", "preflight", "apply", "expand", "cleanup"].includes(command) ||
     process.env.ALLOW_DEMO_SEED !== "true" ||
     process.env.APP_MODE !== "live"
   )
@@ -68,7 +73,11 @@ async function main() {
     );
     return;
   }
-  const plan = createSeedPlan();
+  const expandedFlag = args.includes("--expanded");
+  if (expandedFlag) args.splice(args.indexOf("--expanded"), 1);
+  const expandedMode = expandedFlag || command === "expand";
+  const basePlan = createSeedPlan();
+  const plan = expandedMode ? createExpandedSeedPlan() : basePlan;
   const digest = args[0]?.startsWith("--approve=")
     ? args[0].slice("--approve=".length)
     : "";
@@ -134,24 +143,44 @@ async function main() {
       ))
         throw error;
     }
-    const writer = new SeedWriter(
-      seedTransport(decryptToken(authorization.encryptedToken), hubspotToken),
-      plan,
-      target,
-      state,
-      (updated) => writePrivate(file, updated),
+    const api = seedTransport(
+      decryptToken(authorization.encryptedToken),
+      hubspotToken,
+    );
+    const backupFile = `${SEED_DIRECTORY}/pre-expansion-state.json`;
+    if (command === "expand" && state.digest === seedPlanDigest(basePlan)) {
+      const originalWriter = new SeedWriter(
+        api,
+        basePlan,
+        target,
+        state,
+        (updated) => writePrivate(file, updated),
+      );
+      const expandedState = await originalWriter.prepareExpansion(digest);
+      // Backup precedes the atomic journal transition. No provider writes occurred above.
+      await writePrivate(backupFile, state);
+      assertPreservedSeedState(state, expandedState, basePlan);
+      await writePrivate(file, expandedState);
+      state = expandedState;
+    }
+    if (expandedMode) {
+      const original = stateSchema.parse(await privateJson(backupFile));
+      assertPreservedSeedState(original, state, basePlan);
+    }
+    const writer = new SeedWriter(api, plan, target, state, (updated) =>
+      writePrivate(file, updated),
     );
     if (command === "preflight") {
       await writer.preflight();
       console.info(
-        `Read-only seed preflight passed. Planned: 7 contacts, 7 companies, 3 deals, 6 threads, 9 messages. Approval digest: ${seedPlanDigest(plan)}. No dataset writes occurred.`,
+        `Read-only seed preflight passed. Planned: ${plan.counts.contacts} contacts, ${plan.counts.companies} companies, ${plan.counts.deals} deals, ${plan.counts.threads} threads, ${plan.counts.messages} messages. Approval digest: ${seedPlanDigest(plan)}. No dataset writes occurred.`,
       );
-    } else if (command === "apply") {
+    } else if (command === "apply" || command === "expand") {
       await writePrivate(file, state);
       const receipt = await writer.apply(process.env.ALLOW_DEMO_SEED, digest);
       await writePrivate(`${SEED_DIRECTORY}/manifest.json`, receipt);
       console.info(
-        "Seed verification passed and private insertion receipt saved: 7 contacts, 7 companies, 3 deals, 6 threads, 9 messages. No email was sent.",
+        `Seed verification passed and private insertion receipt saved: ${plan.counts.contacts} contacts, ${plan.counts.companies} companies, ${plan.counts.deals} deals, ${plan.counts.threads} threads, ${plan.counts.messages} messages. No email was sent.`,
       );
     } else {
       await writer.cleanup(process.env.ALLOW_DEMO_SEED, digest, async () => {

@@ -308,6 +308,87 @@ describe("Gmail provider contracts", () => {
 });
 
 describe("full Gmail MIME normalization", () => {
+  it.each(["To", "Cc", "Bcc"] as const)(
+    "preserves named recipient groups in %s alongside standalone recipients and empty groups",
+    async (header) => {
+      const message = gmailMessage();
+      message.payload.headers = [
+        { name: "From", value: "sponsor@example.test" },
+        { name: "Subject", value: "Synthetic group conversation" },
+        {
+          name: header,
+          value:
+            '"Standalone Reviewer" <reviewer@example.test>, Empty Team:;, Lending Team: "Synthetic Lender" <LENDER@EXAMPLE.TEST>, analyst@example.test;',
+        },
+      ];
+      const thread = await normalizeGmailThread(rawThread([message]), [lender]);
+      const recipients = header === "To" ? "to" : header === "Cc" ? "cc" : "bcc";
+      expect(thread.messages[0][recipients]).toEqual([
+        { email: "reviewer@example.test", name: "Standalone Reviewer" },
+        { email: lender, name: "Synthetic Lender" },
+        { email: "analyst@example.test", name: "" },
+      ]);
+      expect(thread.messages[0].direction).toBe("inbound");
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+  it("qualifies a Sponsor after normalization when the lender is only in a named recipient group", async () => {
+    const message = gmailMessage();
+    message.payload.headers = [
+      { name: "From", value: "SPONSOR@EXAMPLE.TEST" },
+      { name: "To", value: "Lending Team: LENDER@EXAMPLE.TEST;" },
+      { name: "Subject", value: "Synthetic group financing request" },
+    ];
+    const normalized = await normalizeGmailThread(rawThread([message]), [lender]);
+    const result = await executeSegment(
+      spec,
+      {
+        contacts: [
+          {
+            id: "synthetic-group-sponsor",
+            firstName: "Synthetic",
+            lastName: "Sponsor",
+            emails: ["sponsor@example.test"],
+            role: "Sponsor",
+            companyIds: [],
+            dealIds: [],
+            associationsComplete: true,
+          },
+        ],
+        companies: [],
+        deals: [],
+        failures: [],
+        capturedAt: spec.asOf,
+      },
+      {
+        name: "demo",
+        validateConnection: async () => ({ mailbox: lender }),
+        async *searchThreads() {
+          yield "thread-1";
+        },
+        getThread: async () => normalized,
+        synchronize: async () => ({
+          threadIds: [],
+          deletedMessageIds: [],
+          nextCursor: "0",
+          requiresFullSync: false,
+        }),
+      },
+      [lender],
+    );
+    expect(result.counts).toMatchObject({
+      contacts: 1,
+      threads: 1,
+      messages: 1,
+      excluded: 0,
+      failures: 0,
+    });
+    expect(result.rows[0].qualifyingMessageIds).toEqual(["message-1"]);
+    expect(result.rows[0].raw.messages[0].to).toEqual([
+      { email: lender, name: "" },
+    ]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
   it("decodes encoded-word headers, addresses, Latin-1 text, safe HTML, and attachment metadata", async () => {
     const message = gmailMessage({
       payload: {

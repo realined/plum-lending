@@ -21,6 +21,7 @@ docs/mailbox-isolation.md
 docs/phase-0-setup-checklist.md
 docs/production.md
 docs/requirements-audit.md
+docs/requirements-verification.md
 docs/security.md
 docs/seed-plan.md
 docs/source-manifest.txt
@@ -117,3 +118,5 @@ tests/seed-plan.test.ts
 tests/storage.test.ts
 tsconfig.json
 vitest.config.ts
+docs/expanded-seed-proposal.md
+docs/expanded-seed-dry-run.md

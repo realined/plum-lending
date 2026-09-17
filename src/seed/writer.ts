@@ -3,7 +3,14 @@ import {
   parseGmailSeedPolicy,
   type GmailSeedPolicy,
 } from "@/providers/gmail-seed-policy";
-import { assertSeedPlan, seedPlanDigest, type SeedPlan } from "./plan";
+import {
+  assertSeedPlan,
+  createSeedPlan,
+  createExpandedSeedPlan,
+  seedThreadKey,
+  seedPlanDigest,
+  type SeedPlan,
+} from "./plan";
 import { renderSeedMessage } from "./mime";
 import { SeedError } from "./private-files";
 import type { SeedAPI } from "./transport";
@@ -417,7 +424,9 @@ export class SeedWriter {
     for (const message of this.plan.messages) {
       if (this.state.messages[message.key]) continue;
       const prior = this.plan.messages.find(
-        (m) => m.caseKey === message.caseKey && this.state.messages[m.key],
+        (m) =>
+          seedThreadKey(m) === seedThreadKey(message) &&
+          this.state.messages[m.key],
       );
       const threadId = prior
         ? this.state.messages[prior.key].threadId
@@ -446,6 +455,31 @@ export class SeedWriter {
       if (threadId && this.state.messages[message.key].threadId !== threadId)
         throw new SeedError("SEED_THREAD_GROUPING_FAILED");
     }
+    return this.verify();
+  }
+  async verify(): Promise<GmailSeedPolicy> {
+    if (
+      Object.keys(this.state.contacts).length !== this.plan.counts.contacts ||
+      Object.keys(this.state.companies).length !== this.plan.counts.companies ||
+      Object.keys(this.state.deals).length !== this.plan.counts.deals ||
+      Object.keys(this.state.messages).length !== this.plan.counts.messages
+    )
+      throw new SeedError("SEED_DATASET_INCOMPLETE");
+    const plannedToActual = new Map<string, string>();
+    const actualToPlanned = new Map<string, string>();
+    for (const message of this.plan.messages) {
+      const planned = seedThreadKey(message);
+      const actual = this.state.messages[message.key]?.threadId;
+      if (
+        !actual ||
+        (plannedToActual.has(planned) &&
+          plannedToActual.get(planned) !== actual) ||
+        (actualToPlanned.has(actual) && actualToPlanned.get(actual) !== planned)
+      )
+        throw new SeedError("SEED_THREAD_GROUPING_FAILED");
+      plannedToActual.set(planned, actual);
+      actualToPlanned.set(actual, planned);
+    }
     await this.preflight();
     for (const contact of this.plan.contacts) {
       const ids = new Set(
@@ -453,7 +487,14 @@ export class SeedWriter {
           .filter((m) => m.caseKey === contact.key)
           .map((m) => this.state.messages[m.key].threadId),
       );
-      if (ids.size !== (contact.key === "meadow" ? 0 : 1))
+      if (
+        ids.size !==
+        new Set(
+          this.plan.messages
+            .filter((m) => m.caseKey === contact.key)
+            .map(seedThreadKey),
+        ).size
+      )
         throw new SeedError("SEED_THREAD_GROUPING_FAILED");
       for (const type of ["companies", "deals"] as const) {
         const data = z
@@ -525,6 +566,20 @@ export class SeedWriter {
       labelId: this.state.labelId,
       threads,
     });
+  }
+  async prepareExpansion(approvedDigest: string): Promise<SeedState> {
+    const base = createSeedPlan(this.plan.asOf, this.plan.namespace);
+    const expanded = createExpandedSeedPlan(
+      this.plan.asOf,
+      this.plan.namespace,
+    );
+    if (
+      this.state.digest !== seedPlanDigest(base) ||
+      approvedDigest !== seedPlanDigest(expanded)
+    )
+      throw new SeedError("SEED_EXPANSION_APPROVAL_REQUIRED");
+    await this.verify(); // Read-only proof of the entire original dataset before migration.
+    return { ...structuredClone(this.state), digest: seedPlanDigest(expanded) };
   }
   async cleanup(
     enabled: string | undefined,
@@ -609,4 +664,36 @@ export class SeedWriter {
     this.state.cleaned = true;
     await this.save(this.state);
   }
+}
+
+// Resume must retain the exact verified base IDs and the approved target identity.
+export function assertPreservedSeedState(
+  original: SeedState,
+  current: SeedState,
+  base: SeedPlan,
+) {
+  stateSchema.parse(original);
+  stateSchema.parse(current);
+  if (
+    original.digest !== seedPlanDigest(base) ||
+    original.pending ||
+    original.cleaned ||
+    original.cleanupStarted ||
+    current.digest !==
+      seedPlanDigest(createExpandedSeedPlan(base.asOf, base.namespace)) ||
+    current.mailbox !== original.mailbox ||
+    current.portalId !== original.portalId ||
+    current.namespace !== original.namespace ||
+    current.labelId !== original.labelId ||
+    !original.labelId ||
+    Object.keys(original.contacts).length !== base.counts.contacts ||
+    Object.keys(original.companies).length !== base.counts.companies ||
+    Object.keys(original.deals).length !== base.counts.deals ||
+    Object.keys(original.messages).length !== base.counts.messages
+  )
+    throw new SeedError("SEED_EXPANSION_BASE_MISMATCH");
+  for (const type of ["contacts", "companies", "deals", "messages"] as const)
+    for (const [key, value] of Object.entries(original[type]))
+      if (JSON.stringify(current[type][key]) !== JSON.stringify(value))
+        throw new SeedError("SEED_EXPANSION_ORIGINAL_ID_CHANGED");
 }
