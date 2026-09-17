@@ -404,3 +404,37 @@ The writer created and journaled the first company, then stopped on `SEED_PROVID
 **Remaining work and owner action.** OpenAI key is absent and no paid call occurred. A pending owner question requests permission up to $1 and private key entry. Then run actual interpretation semantics, reviewed UI execution and final acceptance/rehearsal. Publication remains paused.
 
 **Interview points.** Interpretation versus execution; deterministic exclusion reasons; matching-window versus full-thread context; durable queue/idempotent persistence; semantic stability versus provider-handle volatility.
+
+## Phase 5 AI setup — metered-use authorization
+
+The owner explicitly approved up to $1 total API usage for interpretation acceptance tests and presentation rehearsal. This supersedes only the previous no-model-spending restriction; it does not authorize a larger prepaid purchase, subscription, automatic recharge, publication or deployment. Opened the official Platform sign-in and handed off the password/verification step. The owner will create and privately save the API key; no secret should enter chat or observed browser output. No API call or charge has occurred at this checkpoint.
+
+Retain `gpt-4.1-mini`, Responses structured output, query-only input, `store: false`, 1,000 maximum output tokens and one SDK retry. Official model pricing checked: $0.40 input and $1.60 output per million tokens. Plan at most 10 interpretation invocations (up to 20 HTTP attempts including retries) for the initial five-case evaluation, UI workflow and rehearsal. Check request size and estimated worst-case cost before calls; keep usage evidence count-only. This is an operator test budget, not an implemented product-wide billing cap.
+
+Done criteria remain: real-model semantic cases pass, reviewed UI run succeeds using live providers, downloaded CSV matches the truth set, and the owner can rehearse the explanation. Credential entry and any necessary billing/terms steps remain owner-operated under the collaboration protocol.
+
+**API account handoff.** Owner completed sign-in. The official billing UI shows zero API credit, an existing automatic-reload setting, and a $5 minimum manual credit purchase. No purchase or billing setting was changed. Asked the owner to decide on the larger prepaid purchase and disable automatic reload before funded tests; the approved test-usage ceiling remains $1.
+
+Prepared, but did not submit, a separate named API key in the existing Default project with seven-day expiration and Restricted Responses Write (including read) permissions; all other capability groups remain None. Owner must create the key, paste it directly into the existing private `.env` field `OPENAI_API_KEY`, save, close the secret dialog and report completion. No API request or new secret was generated/read by the agent. This checkpoint changes documentation only; prior 253-test/build evidence remains the current implementation validation.
+
+## Phase 5 complete — real AI and browser acceptance, 2026-09-16 Eastern
+
+**Goal and decisions.** Complete the actual natural-language path without changing architecture. Owner privately saved the key, confirmed credit funded/automatic reload off, and authorized up to $1 total usage. Presence-only checks verified the key, expected model, live/seed-only configuration, mode 0600 and Git-ignore protection. Restarted web to load the key. Retained the existing gpt-4.1-mini Responses parser, strict schema, query-only input and deterministic executor.
+
+**Data flow and files.** `parser.ts` produced validated intent/spec; the browser displayed source/assumptions before `api.ts` saved the durable job. The separate `worker.ts` read real HubSpot and protected Gmail data; domain executor/normalizer/CSV and repository published the result. No feature code changed in this phase. Updated acceptance/setup/checklist/README/demo/interview documentation.
+
+**Actual results.** All five real semantic cases pass: two equivalent 24-minus-3 requests, one 12-minus-2 request, and rejection of unsupported amount/outbound conditions. Five HTTP calls consumed 1,362 input and 228 output tokens, estimated $0.0009096. The browser added one real interpretation invocation; its usage is not captured by the app, so do not claim an exact combined bill. Bounded request/output sizes and retries keep this acceptance run within the approved allowance.
+
+The browser showed the current frozen UTC window, Sponsor/inbound/current-direct-Closed-Won policy and OpenAI structured-output provenance. Its run succeeded in 7.087 seconds: 7 scanned contacts, 2 contacts, 2 threads, 5 messages, 5 exclusions and no failures. Exact expected identities, all normalization schemas, chronological positions, recent context, CC and attachment metadata pass. Canonical counts and 7 contact-company/3 contact-deal links are correct; re-enqueue deduplicates. Browser drawer and JSON verified. The actual downloaded CSV parses with all 8 headers and exactly 2 rows/5 messages; bytes match that run’s stored serialization. Live downloads were kept private outside Git.
+
+**Validation/security.** Final `APP_MODE=demo pnpm check` exited 0: lint, strict types, 253 tests across 9 files (3.63 seconds), production build. Web restarted in live mode afterward. Observed worker logs contain only event/local-job-ID/count fields. No email/CRM data was sent to AI and no credential values were printed. Real-provider positive paths now pass; adversarial/failure/cleanup coverage remains mocked. Seven contacts are not a scale benchmark.
+
+**Alternatives and debt.** No manual/rules interpretation substitution was used for final acceptance. Keep volatile provider attachment handles in raw provenance rather than claiming byte-identical cross-run files. Continuous sync, production quotas/observability, per-thread recovery and broad model evaluation remain deferred. Cosmetic mode-loading and queue-copy issues were recorded for approval before refinement.
+
+**Interview points and owner action.** Explain constrained interpretation versus deterministic decisions; matching-window versus full context; durable jobs/idempotency; separate seed/read grants and receipt privacy; measured live proof versus mocked failure tests. Owner should review the baseline and rehearse; publication remains paused.
+
+## Phase 6 — baseline report before refinement
+
+Created `docs/baseline-report.md` with actual-versus-expected cases, timings, normalization/CSV observations, resolved failures, live/mock distinctions, UI findings, security/reliability limits and ranked improvements. Registered it in the explicit source manifest. Updated the primary live demo script and walkthrough; retained the labeled offline fallback. The technical baseline is complete, while owner acceptance/rehearsal/publication decisions remain separate. No refinement feature was started.
+
+**Final checkpoint review.** The production web app restarted successfully after the final build; the saved natural-language run still renders Live data and Export ready. Explicit source-manifest review includes 119 files and finds no configured credential or approved-mailbox value. Both environment files remain mode 0600, ignored and untracked, as does the private receipt. Diff whitespace check passes. Only documentation/manifest changes occurred after the last passing build. A source-only handoff package is refreshed from this manifest; no live exports or runtime data belong in it. Local version-control checkpoint only; no push or new CI run.

@@ -9,6 +9,7 @@ db/migrations/002_worker_heartbeat.sql
 docker-compose.yml
 docs/architecture.md
 docs/assumptions.md
+docs/baseline-report.md
 docs/build-journal.md
 docs/checklist.md
 docs/demo-preview.png

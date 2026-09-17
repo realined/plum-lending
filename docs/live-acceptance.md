@@ -1,6 +1,6 @@
 # Mandatory live acceptance
 
-**Status: LIVE SEEDING AND READER/CSV INTEGRATION VERIFIED; FULL NATURAL-LANGUAGE ACCEPTANCE PENDING. Approved synthetic records were inserted into real Gmail and HubSpot. Two separate-worker runs using the reviewed typed specification returned exactly 2 contacts, 2 threads and 5 messages, with 5 exclusions and zero failures. Live UI thread inspection and the downloaded eight-column CSV passed. These runs did not invoke AI. OpenAI credentials/spending approval, semantic evaluation and the complete natural-language UI journey remain pending.**
+**Status: TECHNICAL LIVE ACCEPTANCE PASSED on 2026-09-16 Eastern (2026-09-17 UTC). Real Gmail OAuth, HubSpot private-app access, controlled live seeding/replay, five real-model interpretation cases, reviewed browser execution, both provider ingestions, deterministic filtering, full-thread normalization and authenticated CSV download are verified. Final owner review, rehearsal and publication approval remain separate handoff steps.**
 
 The owner's explicit authorization is required before connecting or processing live data. Keep source-control evidence to counts, timestamps, boolean checks, and sanitized error categories. Never save real correspondence, identities, provider IDs, tokens, screenshots of live content, raw responses, or live CSVs in this repository.
 
@@ -48,19 +48,19 @@ Record total CRM contacts scanned, matched contacts/threads/messages, CSV row co
 | Gate | Result |
 | --- | --- |
 | Owner authorization | Approved synthetic-only account, reader/writer consent, sample archival, reviewed seed writes and reserved-domain compatibility adjustment |
-| Date/time of test | 2026-09-16: real seed, replay and two reviewed-specification reader runs; natural-language journey pending |
+| Date/time of test | 2026-09-16 Eastern: seed/replay, two typed-specification runs and the complete natural-language browser journey |
 | Native PostgreSQL migration / worker | Owner Docker PostgreSQL 17.11 healthy on loopback; migrations 1/2 applied; separate live worker heartbeat and authenticated web UI verified |
 | Live Gmail OAuth | Passed: actual consent/callback, approved profile equality, encrypted token, Connected UI and receipt-restricted ingestion |
 | Live HubSpot validation | Passed: real read checks, approved portal identity, encrypted connection, snapshot ingestion and reviewed associations |
-| Live OpenAI interpretation and semantic cases | Blocked by missing API key and unresolved no-charges constraint; no paid call made |
+| Live OpenAI interpretation and semantic cases | Passed: 3 supported requests and 2 unsupported requests behave correctly; owner authorized up to $1 usage and confirmed funded account/auto-reload off |
 | Ingestion from both services | Passed with normal read-only adapters and separate live worker |
 | Only approved synthetic message IDs requested and persisted | Offline negative-boundary tests pass; live receipt-restricted positive run passed |
 | Independent eligibility comparison | Passed: 2 expected contacts; exclusions: 1 non-Sponsor, 1 Closed Won, 3 without qualifying inbound email |
 | Full-thread preservation | Passed: 4-message thread retains recent reply, CC and attachment metadata; UI inspected |
 | Correct live CSV download | Passed: browser download plus private file parsing; 8 exact headers, 2 rows, 5 normalized messages and populated subject/body |
 | Count-only result summary | 7 CRM contacts scanned; 2 contacts, 2 threads, 5 messages, 5 exclusions, 0 failures |
-| Queue-inclusive runtime and dataset size | 6.862 s and 7.402 s; provider corpus: 7 contacts, 7 companies, 3 deals, 6 threads, 9 messages |
-| Owner approval of submission readiness | Pending |
+| Queue-inclusive runtime and dataset size | Typed-specification jobs: 6.862 s and 7.402 s; natural-language UI job: 7.087 s; provider corpus: 7 contacts, 7 companies, 3 deals, 6 threads, 9 messages |
+| Owner approval of submission readiness | Technical baseline delivered; owner review/rehearsal and publication decision pending |
 
 If a live check fails, record the category (for example missing scope, field mapping, no historical data, expired OAuth grant), fix the cause, and repeat only the affected checks. Do not substitute mocked results or mark an incomplete export as a successful live acceptance.
 
@@ -69,3 +69,15 @@ If a live check fails, record the category (for example missing scope, field map
 Live seed replay reused every journaled object/message ID with no duplicate creates. Two independent reader jobs succeeded; canonical counts remain 7 contacts, 7 companies, 3 deals, 2 matched threads and 5 messages. Re-enqueuing the same reviewed request returns the same job. All exported fields match except one opaque Gmail `providerAttachmentId`, which changed between reads; semantic content is stable, but raw CSV bytes are not identical. Keep that distinction explicit.
 
 The reader runs used `Reviewed seed specification (integration test; no AI)` as their interpretation source. They prove live ingestion, deterministic filtering, normalization, persistence and CSV; they do not prove real-model interpretation. The first CSV was also downloaded through the authenticated UI into the owner’s private Downloads folder and parsed without displaying content. No live CSV, mailbox identity or provider identifier is committed. Live cleanup and controlled worker-restart recovery have not been exercised.
+
+## Complete natural-language browser run
+
+The representative challenge sentence was entered through the live application. The UI displayed OpenAI structured output before execution: exact Sponsor mapping, inbound direction, 24-month lookback excluding 3 recent months, direct currently Closed Won exclusion across all time, and complete-thread retention. UTC dates were freshly frozen by the actual interpretation; they differ from the seed preview’s frozen reference time without changing the expected cases.
+
+Run succeeded in 7.087 seconds including queue time: 7 scanned contacts, 2 included contacts, 2 threads, 5 messages, 5 exclusions, 0 failures. The private comparison confirms the exact two expected contact identities, all normalization schemas, chronological positions, recent context, CC and attachment metadata. Canonical counts remain 7 contacts/7 companies/3 deals/2 matched threads/5 messages, with 7 contact-company and 3 contact-deal links. Re-enqueueing the same saved request returns its existing job.
+
+The browser’s thread drawer and normalized JSON were inspected without publishing provider identifiers. Actual CSV download parsed successfully: 8 exact columns, 2 rows, 5 messages and populated subject/body fields. Downloaded bytes equal the stored result serialized by the CSV generator for that run. Across separate reads, one opaque Gmail attachment retrieval ID may vary, as documented above.
+
+All five live semantic cases passed in five requests, with 1,362 input tokens and 228 output tokens, an estimated $0.0009096 at the checked model rates. The browser interpretation was one additional invocation; its token usage was not captured by the app, so an exact total cost is not claimed. The bounded request/output sizes and single allowed retry keep this small acceptance run within the approved $1 ceiling. Owner reports API credit added and auto-reload off. This is an operator budget, not a product-wide hard spending cap.
+
+Runtime logs observed for the three exports contained only event, local job ID and aggregate counts; no correspondence, provider identifiers or credentials. Automated tests still mock provider failures and adversarial cases. Live cleanup, destructive disconnect/delete and worker-crash recovery were deliberately not exercised against the presentation corpus.

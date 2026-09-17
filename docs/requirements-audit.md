@@ -1,5 +1,7 @@
 # Requirements and UI wiring audit
 
+**Current status:** this document preserves the earlier audit. Its historical “pending” findings are superseded by the verified technical live baseline in `baseline-report.md` and `live-acceptance.md`: real Gmail/HubSpot/OpenAI, browser execution, deterministic results and CSV download now pass.
+
 > Follow-up implementation checkpoint: the shell controls, URL navigation, draft/result separation, setup flags and scenario labels below have now been implemented and manually verified. OAuth/AI boundary coverage, CRM-scoped Gmail retrieval, safe job errors and worker heartbeat are also implemented; 174 offline tests pass. Linux CI has passed all 11 browser/API tests plus native PostgreSQL with a separate fixture worker; [evidence](https://github.com/realined/plum-lending/actions/runs/35142338893). This audit retains the original findings as historical context; `checklist.md` and `build-journal.md` track the current evidence. No real-account acceptance has occurred.
 
 

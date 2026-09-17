@@ -69,7 +69,7 @@ Demo must produce repeatable, explainable rows without credentials; full context
 - [x] Rerun isolated production API workflow tests: 3 passed in 6.1 seconds
 - [x] Resolve the shell interaction and offline integration-boundary gaps; real-account acceptance remains open
 
-The shell and core synthetic export journey are verified. Current phase: owner selected an existing job-search/BenTech mailbox; test-only isolation verified offline; dedicated Google Cloud project and Gmail API enablement verified; private environment created; Testing registration, sole test user and read-only scope saved; owner reports Google client creation and credential entry, with private field-presence/isolation checks passed. HubSpot onboarding and `contact_type` creation are verified. The owner created the read-only private app and privately saved its token; the real adapter authentication check passed. The live app now uses fresh Docker PostgreSQL 17.11 with migrations 1 and 2 and a separate worker. HubSpot is encrypted in the database and visibly Connected after administrator sign-in. The owner completed actual Gmail consent; the callback saved the approved profile and encrypted token, and the live UI shows two Connected providers. Both live ingestions now pass through reviewed-specification runs; natural-language acceptance remains pending. Configuration readiness, mocked contracts, native infrastructure checks and live-service proof remain separate evidence levels. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.
+The shell and core synthetic export journey are verified. Current phase: owner selected an existing job-search/BenTech mailbox; test-only isolation verified offline; dedicated Google Cloud project and Gmail API enablement verified; private environment created; Testing registration, sole test user and read-only scope saved; owner reports Google client creation and credential entry, with private field-presence/isolation checks passed. HubSpot onboarding and `contact_type` creation are verified. The owner created the read-only private app and privately saved its token; the real adapter authentication check passed. The live app now uses fresh Docker PostgreSQL 17.11 with migrations 1 and 2 and a separate worker. HubSpot is encrypted in the database and visibly Connected after administrator sign-in. The owner completed actual Gmail consent; the callback saved the approved profile and encrypted token, and the live UI shows two Connected providers. Both live ingestions now pass through reviewed-specification runs; natural-language technical acceptance now passes. Configuration readiness, mocked contracts, native infrastructure checks and live-service proof remain separate evidence levels. Continuous incremental sync remains deferred; the history adapter is not connected to the worker.
 
 ## Dedicated live baseline — owner-requested sequence
 
@@ -87,7 +87,7 @@ The shell and core synthetic export journey are verified. Current phase: owner s
 - [x] HubSpot application connection: existing connection function revalidated and encrypted the environment token; live UI shows Connected; no CRM records stored
 - [x] Phase 4 proposal: deterministic seven-case dataset, MIME generator and offline dry-run; owner selected insert/read/labels with retained Gmail messages on cleanup
 - [x] Phase 4 implementation: separate OAuth helper, guarded writer, private operation journal, preflight, replay and label-only cleanup; 35 focused tests pass
-- [x] Phase 4 writer setup preparation: HubSpot eight-scope form prepared; separate Google seed project and Gmail API enablement verified; owner token/policy handoffs pending
+- [x] Phase 4 writer setup preparation: HubSpot eight-scope form prepared; separate Google seed project and Gmail API enablement verified; owner token/policy handoffs subsequently completed
 - [x] Phase 4 writer configuration: HubSpot writer token privately present and distinct; original reader restored/verified; separate Google registration, sole test user and three scopes saved; Web client form prepared for owner credential creation
 - [x] Phase 4 writer credential readiness: all separate writer fields privately present; HubSpot writer portal/eight scopes and real bounded read checks passed; Gmail consent helper started
 - [x] Separate Gmail writer consent: actual helper success, encrypted private unexpired authorization verified
@@ -95,19 +95,22 @@ The shell and core synthetic export journey are verified. Current phase: owner s
 - [x] Resolve live HubSpot INVALID_EMAIL: owner approved reserved example.com contact addresses and disabled company automation; known company reconciled safely
 - [x] Phase 4 live proof: separate writer credentials/consent, real preflight, explicit dataset approval, seed both services, verify replay without duplicate creates
 - [x] Phase 5 integration proof: live connections, snapshot ingestion/associations, reviewed typed specification, expected/actual comparison, full-thread downloaded CSV, repeat-run semantics/deduplication, timings and regression checks
-- [ ] Phase 5 complete journey: actual natural-language interpretation, five semantic cases and reviewed UI run; owner acceptance
-- [ ] Phase 6: baseline report and ranked improvements; wait for owner approval before refinement
+- [x] Phase 5 technical journey: real natural-language interpretation, all five semantic cases, reviewed UI run and downloaded CSV
+- [ ] Owner accepts baseline and completes presentation rehearsal
+- [x] Phase 6: baseline report and ranked improvements delivered; wait for owner approval before refinement
 
-Only the owner-selected job-search/BenTech account is approved, under seed-only restrictions. Unrelated correspondence and other personal mailboxes remain excluded. All secrets, MFA, recovery, consent and legal acceptance are handled manually by the owner. No charge, deployment or publication is authorized. `pnpm seed:preview` and `pnpm sample` are offline only. The live writer, durable replay journal and cleanup commands are implemented and tested with synthetic provider responses. Separate writer credentials, real preflight, approved writes and replay now pass. Live cleanup remains untested.
+Only the owner-selected job-search/BenTech account is approved, under seed-only restrictions. Unrelated correspondence and other personal mailboxes remain excluded. All secrets, MFA, recovery, consent and legal acceptance are handled manually by the owner. Only up to $1 of model API usage is authorized; larger purchases, subscriptions, deployment and publication remain unauthorized. `pnpm seed:preview` and `pnpm sample` are offline only. The live writer, durable replay journal and cleanup commands are implemented and tested with synthetic provider responses. Separate writer credentials, real preflight, approved writes and replay now pass. Live cleanup remains untested.
 
 
 ## Presentation deadline — Thursday, 2026-09-17, 4:00 PM America/New_York
 
 The owner specified the deadline; the earlier feature pause remains in effect. Targets below are planning targets, not completed gates or a guarantee against external account delays.
 
-- [ ] By 1:00 PM: achieve the verified deliverable — approved seed in both real services; actual natural-language interpretation; full ingestion; seven expected inclusion/exclusion cases; two CSV rows and five full-thread messages; eight required CSV columns; repeat-run deduplication; observed runtime; sanitized evidence
-- [ ] Resolve the OpenAI API credential and no-spending gate with the owner before any live model request; a rules/mock parser is not live AI proof
-- [ ] By 2:00 PM: final regression/diff/privacy review, current source package and documentation, local checkpoint; obtain fresh publication authorization before pushing
+- [x] Before 1:00 PM target: achieved the technical live deliverable — approved seed in both real services; actual natural-language interpretation; full ingestion; seven expected inclusion/exclusion cases; two CSV rows and five full-thread messages; eight required CSV columns; repeat-run deduplication; observed runtime; sanitized evidence
+- [x] Owner authorizes up to $1 total model usage for acceptance and rehearsal
+- [x] Owner saves OpenAI API credential and confirms usable API billing; private presence/protection checks pass
+- [x] Before 2:00 PM target: final local regression/diff/privacy review, current source package/documentation and local checkpoint
+- [ ] Obtain fresh publication authorization before pushing; remote remains behind local acceptance evidence
 - [ ] By 3:00 PM: two rehearsals of the live workflow, architecture explanation and tradeoff Q&A; prepare a clearly labeled offline fallback and private synthetic-only evidence if approved
 - [ ] After the verified baseline and owner review only: selective presentation polish, prioritizing explainability and reliability over new features
 
@@ -119,4 +122,16 @@ Defer additional providers, continuous synchronization, multitenancy, deployment
 - Reader jobs succeeded in 6.862 s and 7.402 s: 7 scanned, 2 included, 5 excluded, 2 threads, 5 messages, 0 failures.
 - UI four-message thread inspected; actual browser CSV downloaded and parsed privately: 8 exact columns, 2 rows, 5 messages.
 - Same-request enqueue deduplicates; canonical counts stay 7/7/3/2/5. All exported fields match except Gmail’s opaque attachment retrieval ID; raw CSV byte equality is not claimed.
-- AI interpretation was not invoked. API key, metered-use approval, five semantic cases and full natural-language UI run remain required.
+- AI interpretation was not invoked. Up to $1 metered use is approved; private API key, five semantic cases and full natural-language UI run now pass.
+
+## Natural-language live acceptance — 2026-09-16 Eastern
+
+- [x] Five real-model semantic cases: representative request, paraphrase, alternate window, unsupported amount, unsupported outbound
+- [x] Browser interpretation explicitly displays OpenAI structured output and the reviewed policy
+- [x] Browser run succeeds in 7.087 s with exact 2/2/5 output, 5 exclusions and no failures
+- [x] Full-thread UI and normalized JSON inspected; actual downloaded CSV privately parsed and byte-compared against stored run results
+- [x] Canonical associations and entity counts remain correct; same-request enqueue deduplicates
+- [x] Runtime log review shows aggregate events without correspondence or credential values
+- [ ] Owner chooses refinements/rehearsal after reviewing `baseline-report.md`
+
+No further product changes are authorized by completion of this baseline. Publication remains paused.
