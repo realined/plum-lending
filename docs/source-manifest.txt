@@ -13,8 +13,6 @@ docs/baseline-report.md
 docs/build-journal.md
 docs/checklist.md
 docs/demo-preview.png
-docs/demo-script.md
-docs/interview-walkthrough.md
 docs/live-acceptance.md
 docs/live-setup.md
 docs/mailbox-isolation.md

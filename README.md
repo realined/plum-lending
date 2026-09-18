@@ -128,7 +128,7 @@ git diff
 
 Work on a feature branch for each meaningful change, review the diff, and stage only intended source files. `.env`, runtime databases, live exports, logs, dependencies, and build output are ignored. Keep real-data evidence out of source files too: ignore rules cannot protect sensitive content copied into tracked documentation. The source ZIP deliberately excludes `.git`; it is a portable snapshot, not a backup of repository history.
 
-## Interview and operating guides
+## Technical and operating guides
 
 - [Requirements and UI wiring audit](docs/requirements-audit.md) — current evidence, unfinished interactions, and next acceptance gates
 - [Build journal](docs/build-journal.md) — phase decisions, results, and remaining gates
@@ -136,6 +136,4 @@ Work on a feature branch for each meaningful change, review the diff, and stage 
 - [Assumptions](docs/assumptions.md)
 - [Security and privacy](docs/security.md)
 - [Live setup](docs/live-setup.md) and [mandatory acceptance](docs/live-acceptance.md)
-- [Demo script](docs/demo-script.md)
-- [Interview walkthrough](docs/interview-walkthrough.md)
 - [Task checklist](docs/checklist.md)

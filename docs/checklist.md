@@ -168,3 +168,8 @@ Subsequent owner instructions authorize pushing the latest work, correctness rev
 - [x] Clarify database-only deletion, retained connections/source records/downloads, and contact–thread preview cardinality
 - [x] Lint/types/264 tests/build and four API checks pass; no live deletion performed
 - [ ] Repeat seven browser automation checks when local Playwright Chromium is available; current attempt blocked before launch
+
+
+## Reviewer-facing documentation
+- [x] Remove presenter-only scripts and rehearsal notes from the source tree; preserve local practice copies
+- [x] Retain technical/operating documentation and remove obsolete README/manifest references

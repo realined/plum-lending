@@ -88,4 +88,4 @@ No identified blocker remains for the agreed technical Gmail/HubSpot POC vertica
 4. Separate writer/read permissions and exact message receipts protect the controlled live demo from unrelated mail.
 5. Real-account acceptance catches provider behavior that mocks cannot prove; state what was measured and what remains untested.
 
-Important modules: `src/server/parser.ts`, `src/domain/segment.ts`, `src/domain/executor.ts`, `src/domain/normalize.ts`, `src/domain/csv.ts`, `src/providers/`, `src/server/repository.ts`, `src/server/worker.ts`, `src/seed/`, and the workspace/thread UI components. See `interview-walkthrough.md` for the 60-second, 5-minute and 20-minute explanations.
+Important modules: `src/server/parser.ts`, `src/domain/segment.ts`, `src/domain/executor.ts`, `src/domain/normalize.ts`, `src/domain/csv.ts`, `src/providers/`, `src/server/repository.ts`, `src/server/worker.ts`, `src/seed/`, and the workspace/thread UI components. See `architecture.md`, `assumptions.md` and `security.md` for implementation decisions and constraints.
